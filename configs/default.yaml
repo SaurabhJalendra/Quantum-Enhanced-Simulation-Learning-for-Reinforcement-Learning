@@ -1,0 +1,174 @@
+# =============================================================================
+# Default Configuration for Quantum-Enhanced World Models
+# =============================================================================
+# Author: Saurabh Jalendra
+# Institution: BITS Pilani (WILP Division)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Environment Configuration
+# -----------------------------------------------------------------------------
+environment:
+  name: "CartPole-v1"  # Default simple environment
+  max_episode_steps: 500
+  action_repeat: 1
+
+# DMControl specific
+dmcontrol:
+  domain: "walker"
+  task: "walk"
+
+# Atari specific
+atari:
+  game: "Pong"
+  frame_stack: 4
+  frame_skip: 4
+  image_size: 84
+
+# -----------------------------------------------------------------------------
+# World Model Architecture
+# -----------------------------------------------------------------------------
+model:
+  # Encoder
+  encoder:
+    type: "mlp"  # "mlp" for state-based, "cnn" for image-based
+    hidden_dims: [256, 256]
+    activation: "elu"
+
+  # Recurrent State-Space Model (RSSM)
+  rssm:
+    stochastic_size: 32
+    deterministic_size: 256
+    hidden_size: 256
+    discrete: true
+    num_classes: 32
+
+  # Dynamics predictor
+  dynamics:
+    hidden_dims: [256, 256]
+    activation: "elu"
+
+  # Reward predictor
+  reward:
+    hidden_dims: [256, 256]
+    activation: "elu"
+    dist: "twohot_symlog"  # DreamerV3 style
+
+  # Continue predictor
+  continue_:
+    hidden_dims: [256, 256]
+    activation: "elu"
+
+  # Decoder
+  decoder:
+    hidden_dims: [256, 256]
+    activation: "elu"
+
+# -----------------------------------------------------------------------------
+# Training Configuration
+# -----------------------------------------------------------------------------
+training:
+  # Basic training
+  total_steps: 1000000
+  batch_size: 50
+  sequence_length: 50
+
+  # Optimizer
+  optimizer:
+    name: "adam"
+    learning_rate: 3.0e-4
+    eps: 1.0e-8
+    weight_decay: 0.0
+
+  # Learning rate schedule
+  lr_schedule:
+    enabled: false
+    type: "cosine"
+    warmup_steps: 1000
+
+  # Losses
+  losses:
+    kl_weight: 1.0
+    reconstruction_weight: 1.0
+    reward_weight: 1.0
+    continue_weight: 1.0
+
+  # Gradient clipping
+  grad_clip: 100.0
+
+  # Mixed precision
+  mixed_precision: true
+
+# -----------------------------------------------------------------------------
+# Replay Buffer
+# -----------------------------------------------------------------------------
+replay:
+  capacity: 1000000
+  min_samples: 1000
+  prioritized: false
+  priority_alpha: 0.6
+  priority_beta: 0.4
+
+# -----------------------------------------------------------------------------
+# Quantum-Inspired Configuration
+# -----------------------------------------------------------------------------
+quantum_inspired:
+  # QAOA-enhanced
+  qaoa:
+    enabled: false
+    p_layers: 3
+    mixing_strength: 0.1
+    beta_init: 0.1
+    gamma_init: 0.1
+
+  # Superposition-enhanced replay
+  superposition:
+    enabled: false
+    parallel_samples: 8
+    weight_decay: 0.99
+    interference: true
+
+  # Gate-enhanced layers
+  gates:
+    enabled: false
+    gate_layers: 4
+    hadamard: true
+    cnot: true
+    phase: true
+
+  # Error correction ensemble
+  error_correction:
+    enabled: false
+    num_models: 3
+    syndrome_threshold: 0.1
+    correction_method: "majority"
+
+# -----------------------------------------------------------------------------
+# Evaluation Configuration
+# -----------------------------------------------------------------------------
+evaluation:
+  eval_every: 10000
+  eval_episodes: 10
+  video_every: 50000
+
+# -----------------------------------------------------------------------------
+# Logging Configuration
+# -----------------------------------------------------------------------------
+logging:
+  log_every: 1000
+  save_every: 50000
+  tensorboard: true
+  wandb: false
+  wandb_project: "quantum-world-models"
+
+# -----------------------------------------------------------------------------
+# Reproducibility
+# -----------------------------------------------------------------------------
+seed: 42
+deterministic: true
+
+# -----------------------------------------------------------------------------
+# Hardware
+# -----------------------------------------------------------------------------
+device: "auto"  # "auto", "cuda", "cpu"
+num_workers: 4
