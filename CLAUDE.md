@@ -264,6 +264,11 @@ Utilities: NumPy, Pandas, Matplotlib
 - RAM: 32GB
 - Storage: 200GB+
 
+**Development Machine (Actual):**
+- CPU: AMD Ryzen 9 9950X3D
+- GPU: ASUS ROG Astral RTX 5090
+- RAM: 32GB
+
 **Critical:** No quantum hardware needed!
 
 ---
