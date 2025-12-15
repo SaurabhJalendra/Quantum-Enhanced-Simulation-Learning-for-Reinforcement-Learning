@@ -2,7 +2,7 @@
 
 **Purpose:** This file provides complete context about the dissertation project for AI assistants (like Claude, GPT, etc.) to understand the project quickly and provide accurate, contextual assistance.
 
-**Last Updated:** November 11, 2025
+**Last Updated:** December 01, 2025
 
 ---
 
@@ -176,9 +176,15 @@ Taking concepts from quantum computing (like superposition, entanglement, QAOA) 
 - **Why:** Robust predictions under uncertainty
 - **File:** `src/models/error_correction.py`
 
-#### 6. Fully Integrated (Optional)
-- **What:** Combines best components from above
-- **Why:** Test if benefits stack
+#### 6. Fully Integrated (REQUIRED)
+- **What:** Combines ALL quantum-inspired components into one enhanced DreamerV3
+- **Components:**
+  - QAOA-inspired optimizer (for training)
+  - Superposition-enhanced replay buffer (for sampling)
+  - Gate-enhanced neural layers (for representations)
+  - Error correction ensemble (for predictions)
+- **Why:** DreamerV3 is a collective system - quantum methods should enhance each component they're suited for
+- **Comparison:** Integrated DreamerV3 vs Classical DreamerV3
 - **File:** `src/models/integrated.py`
 
 ---
@@ -218,20 +224,44 @@ Taking concepts from quantum computing (like superposition, entanglement, QAOA) 
 
 ---
 
-## 🌍 Test Environments
+## 🌍 Test Environments (ALL REQUIRED)
 
-### Simple Control (Debugging)
-- **CartPole-v1** - Balance a pole
-- **Pendulum-v1** - Swing up pendulum
+All environments below are **required** for comprehensive evaluation. Each tests different aspects of world model learning.
 
-### DMControl Suite (Primary)
-- **Walker-walk** - Bipedal walking
-- **Cheetah-run** - Quadruped running
-- **Reacher-easy/hard** - Arm reaching
+### Tier 1: Simple Control (Development & Debugging)
+| Environment | Type | Obs Dim | Action Dim | Purpose |
+|-------------|------|---------|------------|---------|
+| **CartPole-v1** | Discrete | 4 | 2 | Quick iteration, debugging |
+| **Pendulum-v1** | Continuous | 3 | 1 | Basic continuous control |
 
-### Atari (Visual)
-- **Pong** - Classic game
-- **Breakout** - Brick breaking
+### Tier 2: DMControl Suite (Primary Benchmarks)
+| Environment | Type | Obs Dim | Action Dim | Purpose |
+|-------------|------|---------|------------|---------|
+| **Walker-walk** | Continuous | 24 | 6 | Locomotion, balance |
+| **Cheetah-run** | Continuous | 17 | 6 | Fast locomotion |
+| **Reacher-easy** | Continuous | 6 | 2 | Manipulation, precision |
+| **Reacher-hard** | Continuous | 6 | 2 | Harder manipulation |
+
+### Tier 3: Atari (Visual/Pixel-Based)
+| Environment | Type | Obs Dim | Action Dim | Purpose |
+|-------------|------|---------|------------|---------|
+| **Pong** | Discrete | 84×84×3 | 6 | Visual RL, temporal |
+| **Breakout** | Discrete | 84×84×3 | 4 | Visual RL, planning |
+
+### Environment Progression Strategy
+```
+Phase 1 (Development):   CartPole, Pendulum     → Fast debugging
+Phase 2 (Validation):    Reacher-easy           → Verify continuous control
+Phase 3 (Full Testing):  Walker, Cheetah        → Primary results
+Phase 4 (Comprehensive): Reacher-hard, Atari    → Complete evaluation
+```
+
+### Minimum Seeds Per Environment
+| Environment Type | Seeds Required |
+|-----------------|----------------|
+| Simple Control | 5 seeds |
+| DMControl Suite | 10 seeds |
+| Atari | 5 seeds |
 
 ---
 
@@ -715,16 +745,45 @@ Progress should be logged in `/docs/progress-log.md` with:
 
 ### Experiments to Run
 
-| ID | Name | Approaches | Envs | Seeds | Status |
-|----|------|-----------|------|-------|--------|
-| E1 | Baseline Performance | Baseline | All | 5 | ⚪ Pending |
-| E2 | QAOA Comparison | Baseline, QAOA | Walker, Cheetah | 5 | ⚪ Pending |
-| E3 | Superposition Comparison | Baseline, Superposition | Walker, Cheetah | 5 | ⚪ Pending |
-| E4 | Gate Transformations | Baseline, Gates | Walker, Pong | 5 | ⚪ Pending |
-| E5 | Error Correction | Baseline, Error Correction | Walker (noisy) | 5 | ⚪ Pending |
-| E6 | Full Comparison | All 6 | All | 10 | ⚪ Pending |
-| E7 | Robustness Testing | All | Walker (various noise) | 5 | ⚪ Pending |
-| E8 | Generalization | All | Humanoid, Quadruped | 3 | ⚪ Pending |
+#### Phase 1: Individual Method Validation (CartPole + Pendulum)
+| ID | Name | Approaches | Environments | Seeds | Status |
+|----|------|-----------|--------------|-------|--------|
+| E1.1 | Baseline Validation | Baseline | CartPole, Pendulum | 5 | ⚪ Pending |
+| E1.2 | QAOA Validation | QAOA | CartPole, Pendulum | 5 | ⚪ Pending |
+| E1.3 | Superposition Validation | Superposition | CartPole, Pendulum | 5 | ⚪ Pending |
+| E1.4 | Gates Validation | Gates | CartPole, Pendulum | 5 | ⚪ Pending |
+| E1.5 | Error Correction Validation | Error Correction | CartPole, Pendulum | 5 | ⚪ Pending |
+| E1.6 | Integrated Validation | Integrated | CartPole, Pendulum | 5 | ⚪ Pending |
+
+#### Phase 2: DMControl Suite (Primary Benchmarks)
+| ID | Name | Approaches | Environments | Seeds | Status |
+|----|------|-----------|--------------|-------|--------|
+| E2.1 | Walker Comparison | All 6 | Walker-walk | 10 | ⚪ Pending |
+| E2.2 | Cheetah Comparison | All 6 | Cheetah-run | 10 | ⚪ Pending |
+| E2.3 | Reacher Easy Comparison | All 6 | Reacher-easy | 10 | ⚪ Pending |
+| E2.4 | Reacher Hard Comparison | All 6 | Reacher-hard | 10 | ⚪ Pending |
+
+#### Phase 3: Atari (Visual Benchmarks)
+| ID | Name | Approaches | Environments | Seeds | Status |
+|----|------|-----------|--------------|-------|--------|
+| E3.1 | Pong Comparison | All 6 | Pong | 5 | ⚪ Pending |
+| E3.2 | Breakout Comparison | All 6 | Breakout | 5 | ⚪ Pending |
+
+#### Phase 4: Analysis & Ablation
+| ID | Name | Approaches | Environments | Seeds | Status |
+|----|------|-----------|--------------|-------|--------|
+| E4.1 | Ablation Study | Integrated variants | Walker, Cheetah | 5 | ⚪ Pending |
+| E4.2 | Robustness Testing | All 6 | Walker (noisy) | 5 | ⚪ Pending |
+| E4.3 | Computational Cost | All 6 | Walker | 3 | ⚪ Pending |
+
+### Total Experiment Summary
+| Category | Environments | Approaches | Seeds | Total Runs |
+|----------|--------------|------------|-------|------------|
+| Validation | 2 | 6 | 5 | 60 |
+| DMControl | 4 | 6 | 10 | 240 |
+| Atari | 2 | 6 | 5 | 60 |
+| Analysis | 2 | 6 | 5 | 60 |
+| **TOTAL** | **10** | **6** | - | **~420 runs** |
 
 ### Experiment Checklist
 
@@ -930,7 +989,7 @@ For each experiment:
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.0 | Nov 11, 2025 | Initial CLAUDE.md creation | Saurabh Jalendra |
-| - | - | - | - |
+| 1.1 | Dec 01, 2025 | Updated: All environments now REQUIRED (Reacher, Atari included), Integrated approach now REQUIRED, Comprehensive experiment plan with ~420 runs | Saurabh Jalendra |
 
 ---
 
@@ -967,7 +1026,10 @@ A: No, can use existing implementations and modify training procedures.
 A: Still valuable! Negative results are publishable.
 
 **Q: How many environments minimum?**
-A: At least 4-5 (CartPole, Walker, Cheetah, Reacher, Pong).
+A: ALL 10 environments are required:
+- Simple: CartPole, Pendulum (2)
+- DMControl: Walker, Cheetah, Reacher-easy, Reacher-hard (4)
+- Atari: Pong, Breakout (2)
 
 **Q: How many seeds?**
 A: Minimum 5, ideally 10 for final comparison.
@@ -1008,9 +1070,9 @@ Even if quantum-inspired methods don't outperform classical approaches, understa
 
 ---
 
-**Last Updated:** November 11, 2025  
-**Status:** Active Development - Phase 1  
-**Next Review:** November 20, 2025
+**Last Updated:** December 01, 2025
+**Status:** Active Development - Phase 2 (Quantum-Inspired Development)
+**Next Review:** December 15, 2025
 
 ---
 

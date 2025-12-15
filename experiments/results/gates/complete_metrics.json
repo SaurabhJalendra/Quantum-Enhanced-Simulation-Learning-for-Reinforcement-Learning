@@ -1,0 +1,111 @@
+{
+  "metadata": {
+    "phase": 5,
+    "experiment": "Gate-Enhanced Neural Layers",
+    "environment": "CartPole-v1",
+    "num_seeds": 5,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "num_epochs": 50,
+    "num_episodes": 50,
+    "batch_size": 16,
+    "seq_len": 20,
+    "bonferroni_alpha": 0.025
+  },
+  "sample_efficiency": {
+    "target_loss": 1.1242903770009676,
+    "gate_epochs_to_target": 40,
+    "standard_epochs_to_target": 50
+  },
+  "training_speed": {
+    "gate_mean_time": 75.37211828231811,
+    "gate_std_time": 10.089651536895323
+  },
+  "prediction_accuracy": {
+    "gate_test_mse_mean": 0.0022652661874114225,
+    "gate_test_mse_std": 0.0005779795112083425,
+    "standard_test_mse_mean": 0.024222731000433366,
+    "standard_test_mse_std": 0.014742099195802816
+  },
+  "final_performance": {
+    "gate_loss_mean": 1.0476687858502072,
+    "gate_loss_std": 0.21583181507825674,
+    "standard_loss_mean": 2.054843493302663,
+    "standard_loss_std": 0.170396015521946
+  },
+  "stability": {
+    "gate_loss_std": 0.21583181507825674,
+    "standard_loss_std": 0.170396015521946
+  },
+  "computational_cost": {
+    "gate_params": 330706,
+    "standard_params": 291529
+  },
+  "statistical_tests": {
+    "loss_comparison": {
+      "p_value": 0.007936507936507936,
+      "cohens_d": -4.6328870046625585,
+      "significant_bonferroni": true,
+      "winner": "Gate-Enhanced"
+    },
+    "mse_comparison": {
+      "p_value": 0.007936507936507936,
+      "cohens_d": -1.8825621979075957,
+      "significant_bonferroni": true,
+      "winner": "Gate-Enhanced"
+    }
+  },
+  "confidence_intervals": {
+    "gate_loss_ci": [
+      0.748046192590216,
+      1.3472913791101984
+    ],
+    "standard_loss_ci": [
+      1.8182959016821056,
+      2.291391084923221
+    ],
+    "gate_mse_ci": [
+      0.001462901995011913,
+      0.003067630379810932
+    ],
+    "standard_mse_ci": [
+      0.0037574164241697995,
+      0.044688045576696936
+    ]
+  },
+  "raw_results": {
+    "gate_final_losses": [
+      1.4399009148279827,
+      1.0621014038721721,
+      0.8215133845806122,
+      1.032993346452713,
+      0.8818348795175552
+    ],
+    "standard_final_losses": [
+      2.266041914621989,
+      2.260403871536255,
+      1.9054591357707977,
+      1.9098882675170898,
+      1.9324242770671844
+    ],
+    "gate_test_mses": [
+      0.002834227925632149,
+      0.0026056598289869726,
+      0.001665531696441273,
+      0.001468933226230244,
+      0.0027519782597664744
+    ],
+    "standard_test_mses": [
+      0.032883492298424244,
+      0.04811838548630476,
+      0.009933464539547762,
+      0.00918962899595499,
+      0.020988683681935072
+    ]
+  }
+}
