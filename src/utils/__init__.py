@@ -1,9 +1,9 @@
+
 """
 Utility Functions for Quantum-Enhanced World Models.
 
 Author: Saurabh Jalendra
 Institution: BITS Pilani (WILP Division)
-Date: November 2025
 """
 
 import os
@@ -30,7 +30,7 @@ def set_seed(seed: int = 42, deterministic: bool = True) -> None:
     seed : int
         Random seed value
     deterministic : bool
-        Whether to enable deterministic algorithms (may reduce performance)
+        Whether to enable deterministic algorithms
     """
     random.seed(seed)
     np.random.seed(seed)
@@ -41,11 +41,6 @@ def set_seed(seed: int = 42, deterministic: bool = True) -> None:
     if deterministic:
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
-        if hasattr(torch, 'use_deterministic_algorithms'):
-            try:
-                torch.use_deterministic_algorithms(True)
-            except RuntimeError:
-                pass
 
     os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -58,7 +53,7 @@ def get_device(prefer_gpu: bool = True) -> torch.device:
     Parameters
     ----------
     prefer_gpu : bool
-        Whether to prefer GPU over CPU if available
+        Whether to prefer GPU over CPU
 
     Returns
     -------
@@ -77,112 +72,30 @@ def get_device(prefer_gpu: bool = True) -> torch.device:
 
 @dataclass
 class MetricLogger:
-    """
-    Simple metric logger for tracking training progress.
-
-    Attributes
-    ----------
-    name : str
-        Name of the logger
-    metrics : Dict[str, List[float]]
-        Dictionary of metric names to values
-    """
+    """Simple metric logger for tracking training progress."""
     name: str
     metrics: Dict[str, List[float]] = field(default_factory=lambda: defaultdict(list))
 
     def log(self, **kwargs) -> None:
-        """Log metric values."""
         for key, value in kwargs.items():
             self.metrics[key].append(value)
 
-    def get(self, key: str) -> List[float]:
-        """Get all values for a metric."""
-        return self.metrics[key]
-
-    def get_last(self, key: str, n: int = 1) -> Union[float, List[float]]:
-        """Get last n values for a metric."""
-        values = self.metrics[key][-n:]
-        return values[0] if n == 1 else values
-
     def get_mean(self, key: str, n: Optional[int] = None) -> float:
-        """Get mean of last n values (or all if n is None)."""
         values = self.metrics[key]
         if n is not None:
             values = values[-n:]
         return np.mean(values) if values else 0.0
 
     def to_dataframe(self) -> pd.DataFrame:
-        """Convert metrics to a pandas DataFrame."""
         return pd.DataFrame(dict(self.metrics))
 
     def save(self, path: Union[str, Path]) -> None:
-        """Save metrics to CSV file."""
         self.to_dataframe().to_csv(path, index=False)
-
-    def __repr__(self) -> str:
-        return f"MetricLogger(name='{self.name}', metrics={list(self.metrics.keys())})"
-
-
-class Timer:
-    """
-    Reusable timer class for tracking multiple operations.
-
-    Examples
-    --------
-    >>> t = Timer()
-    >>> t.start()
-    >>> # ... do something ...
-    >>> elapsed = t.stop()
-    """
-
-    def __init__(self):
-        self._start_time = None
-        self._elapsed = 0.0
-        self._running = False
-
-    def start(self) -> 'Timer':
-        """Start the timer."""
-        if not self._running:
-            self._start_time = time.perf_counter()
-            self._running = True
-        return self
-
-    def stop(self) -> float:
-        """Stop the timer and return elapsed time."""
-        if self._running:
-            self._elapsed = time.perf_counter() - self._start_time
-            self._running = False
-        return self._elapsed
-
-    def reset(self) -> 'Timer':
-        """Reset the timer."""
-        self._start_time = None
-        self._elapsed = 0.0
-        self._running = False
-        return self
-
-    @property
-    def elapsed(self) -> float:
-        """Get elapsed time."""
-        if self._running:
-            return time.perf_counter() - self._start_time
-        return self._elapsed
 
 
 @contextlib.contextmanager
 def timer(name: str = "Operation"):
-    """
-    Context manager for timing code blocks.
-
-    Parameters
-    ----------
-    name : str
-        Name of the operation being timed
-
-    Yields
-    ------
-    Dict with timing info
-    """
+    """Context manager for timing code blocks."""
     start = time.perf_counter()
     timing_info = {"name": name}
     try:
@@ -193,49 +106,46 @@ def timer(name: str = "Operation"):
         print(f"{name}: {elapsed:.4f}s")
 
 
+class Timer:
+    """Simple timer class for measuring elapsed time."""
+
+    def __init__(self):
+        self._start_time: Optional[float] = None
+        self._elapsed: float = 0.0
+
+    def start(self) -> 'Timer':
+        """Start the timer."""
+        self._start_time = time.perf_counter()
+        return self
+
+    def stop(self) -> float:
+        """Stop the timer and return elapsed time."""
+        if self._start_time is not None:
+            self._elapsed = time.perf_counter() - self._start_time
+            self._start_time = None
+        return self._elapsed
+
+    def elapsed(self) -> float:
+        """Get elapsed time without stopping."""
+        if self._start_time is not None:
+            return time.perf_counter() - self._start_time
+        return self._elapsed
+
+
 def load_config(path: Union[str, Path]) -> Dict[str, Any]:
-    """
-    Load configuration from YAML file.
-
-    Parameters
-    ----------
-    path : Union[str, Path]
-        Path to YAML configuration file
-
-    Returns
-    -------
-    Dict[str, Any]
-        Configuration dictionary
-    """
-    path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"Config file not found: {path}")
-
+    """Load configuration from YAML file."""
     with open(path, 'r') as f:
-        config = yaml.safe_load(f)
-
-    return config
+        return yaml.safe_load(f)
 
 
 def save_config(config: Dict[str, Any], path: Union[str, Path]) -> None:
-    """
-    Save configuration to YAML file.
-
-    Parameters
-    ----------
-    config : Dict[str, Any]
-        Configuration dictionary
-    path : Union[str, Path]
-        Path to save YAML file
-    """
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-
+    """Save configuration to YAML file."""
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, 'w') as f:
-        yaml.dump(config, f, default_flow_style=False, sort_keys=False)
+        yaml.dump(config, f, default_flow_style=False)
 
 
-# Color palette for visualizations
+# Color palette for different approaches (for consistent visualizations)
 COLORS = {
     "baseline": "#2ecc71",      # Green
     "qaoa": "#3498db",          # Blue

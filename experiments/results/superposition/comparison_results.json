@@ -1,0 +1,38 @@
+{
+  "amplitude_vs_standard": {
+    "method1": "Amplitude",
+    "method2": "Standard",
+    "mean1": 1.0054814875125886,
+    "mean2": 1.0092359256744385,
+    "std1": 0.002265353025547128,
+    "std2": 0.004820205628587948,
+    "p_value": 5.4973797938353104e-14,
+    "cohens_d": -0.996917735579052,
+    "significant": true,
+    "winner": "Amplitude"
+  },
+  "interference_vs_standard": {
+    "method1": "Interference",
+    "method2": "Standard",
+    "mean1": 1.0065812090039252,
+    "mean2": 1.0092359256744385,
+    "std1": 0.0017966446250484503,
+    "std2": 0.004820205628587948,
+    "p_value": 1.1880213964877522e-05,
+    "cohens_d": -0.7298258872180349,
+    "significant": true,
+    "winner": "Interference"
+  },
+  "interference_vs_amplitude": {
+    "method1": "Interference",
+    "method2": "Amplitude",
+    "mean1": 1.0065812090039252,
+    "mean2": 1.0054814875125886,
+    "std1": 0.0017966446250484503,
+    "std2": 0.002265353025547128,
+    "p_value": 9.547105876414812e-08,
+    "cohens_d": 0.5378992059001743,
+    "significant": true,
+    "winner": "Amplitude"
+  }
+}

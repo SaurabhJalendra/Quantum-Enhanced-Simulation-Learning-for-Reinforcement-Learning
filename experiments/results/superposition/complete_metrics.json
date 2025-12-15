@@ -1,0 +1,66 @@
+{
+  "sample_efficiency": {
+    "standard": {
+      "steps_to_target": 185,
+      "final_loss": 1.0090134582996368,
+      "target_loss": 1.0594641312146187,
+      "total_steps": 5000,
+      "efficiency_ratio": 0.037
+    },
+    "amplitude": {
+      "steps_to_target": 251,
+      "final_loss": 1.0064367898464206,
+      "target_loss": 1.0567586293387417,
+      "total_steps": 5000,
+      "efficiency_ratio": 0.0502
+    },
+    "interference": {
+      "steps_to_target": 162,
+      "final_loss": 1.0070720170497893,
+      "target_loss": 1.0574256179022787,
+      "total_steps": 5000,
+      "efficiency_ratio": 0.0324
+    }
+  },
+  "test_set_evaluation": {
+    "test_seed": 9999,
+    "n_test_episodes": 20,
+    "results": {
+      "standard": {
+        "obs_mse": 0.003105296850359688,
+        "obs_std": 0.0013131193155573224,
+        "reward_mse": 4.909354781072276e-05,
+        "reward_std": 1.8077649870534715e-05,
+        "overall_mse": 0.0031543903981704107,
+        "n_episodes": 6.0
+      },
+      "amplitude": {
+        "obs_mse": 0.0019296655470194917,
+        "obs_std": 0.0003854368649535667,
+        "reward_mse": 3.6474679291131906e-05,
+        "reward_std": 1.5708447717330518e-05,
+        "overall_mse": 0.001966140226310624,
+        "n_episodes": 6.0
+      },
+      "interference": {
+        "obs_mse": 0.0013571871968451887,
+        "obs_std": 0.0005564740165841513,
+        "reward_mse": 4.0983676929802947e-05,
+        "reward_std": 1.3684722612746183e-05,
+        "overall_mse": 0.0013981708737749916,
+        "n_episodes": 6.0
+      }
+    }
+  },
+  "training_metrics": {
+    "standard": {
+      "final_loss": 1.0092359256744385
+    },
+    "amplitude": {
+      "final_loss": 1.0054814875125886
+    },
+    "interference": {
+      "final_loss": 1.0065812090039252
+    }
+  }
+}
