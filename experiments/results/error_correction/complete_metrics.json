@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "phase": 6,
+    "experiment": "Error Correction Ensemble",
+    "environment": "CartPole-v1",
+    "num_seeds": 5,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "num_epochs": 50,
+    "num_episodes": 50,
+    "batch_size": 16,
+    "seq_len": 20,
+    "num_ensemble_models": 5,
+    "correction_method": "weighted",
+    "bonferroni_alpha": 0.025
+  },
+  "sample_efficiency": {
+    "target_loss": 3.054251100023587,
+    "ensemble_epochs_to_target": 45.6,
+    "single_epochs_to_target": 46.0
+  },
+  "training_speed": {
+    "ensemble_mean_time": 30.938178080000217,
+    "ensemble_std_time": 9.447287081601656
+  },
+  "prediction_accuracy": {
+    "ensemble_test_mse_mean": 0.22101272642612457,
+    "ensemble_test_mse_std": 0.07560868460731232,
+    "single_test_mse_mean": 0.24113352596759796,
+    "single_test_mse_std": 0.06487140265766135
+  },
+  "final_performance": {
+    "ensemble_loss_mean": 3.1922733163833614,
+    "ensemble_loss_std": 0.3582318249888219,
+    "single_loss_mean": 3.2150011579195654,
+    "single_loss_std": 0.344600134252442
+  },
+  "stability": {
+    "ensemble_loss_std": 0.3582318249888219,
+    "single_loss_std": 0.344600134252442
+  },
+  "robustness": {
+    "mean_robustness_score": 0.0053075310929367936
+  },
+  "computational_cost": {
+    "ensemble_params": 290285,
+    "single_params": 58057
+  },
+  "statistical_tests": {
+    "loss_comparison": {
+      "p_value": 1.0,
+      "cohens_d": -0.057836234390597784,
+      "significant_bonferroni": false,
+      "winner": "Ensemble"
+    },
+    "mse_comparison": {
+      "p_value": 0.8412698412698413,
+      "cohens_d": -0.2554703947026129,
+      "significant_bonferroni": false,
+      "winner": "Ensemble"
+    }
+  },
+  "confidence_intervals": {
+    "ensemble_loss_ci": [
+      2.8782692771308667,
+      3.506277355635856
+    ],
+    "single_loss_ci": [
+      2.9129458224239118,
+      3.517056493415219
+    ],
+    "ensemble_mse_ci": [
+      0.15473879230537796,
+      0.2872866605468712
+    ],
+    "single_mse_ci": [
+      0.18427123444138777,
+      0.29799581749380816
+    ]
+  },
+  "raw_results": {
+    "ensemble_final_losses": [
+      3.509422540664673,
+      3.4689244270324706,
+      3.4554296731948853,
+      2.645278978347778,
+      2.882310962677002
+    ],
+    "single_final_losses": [
+      3.62096107006073,
+      3.4321032762527466,
+      3.397369146347046,
+      2.702302873134613,
+      2.922269423802694
+    ],
+    "ensemble_test_mses": [
+      0.23158104717731476,
+      0.3103961646556854,
+      0.28506144881248474,
+      0.10072436928749084,
+      0.1773006021976471
+    ],
+    "single_test_mses": [
+      0.25039517879486084,
+      0.3411962687969208,
+      0.2508932948112488,
+      0.1382475197315216,
+      0.2249353677034378
+    ]
+  }
+}

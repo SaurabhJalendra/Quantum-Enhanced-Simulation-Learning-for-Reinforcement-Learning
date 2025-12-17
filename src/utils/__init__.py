@@ -106,32 +106,6 @@ def timer(name: str = "Operation"):
         print(f"{name}: {elapsed:.4f}s")
 
 
-class Timer:
-    """Simple timer class for measuring elapsed time."""
-
-    def __init__(self):
-        self._start_time: Optional[float] = None
-        self._elapsed: float = 0.0
-
-    def start(self) -> 'Timer':
-        """Start the timer."""
-        self._start_time = time.perf_counter()
-        return self
-
-    def stop(self) -> float:
-        """Stop the timer and return elapsed time."""
-        if self._start_time is not None:
-            self._elapsed = time.perf_counter() - self._start_time
-            self._start_time = None
-        return self._elapsed
-
-    def elapsed(self) -> float:
-        """Get elapsed time without stopping."""
-        if self._start_time is not None:
-            return time.perf_counter() - self._start_time
-        return self._elapsed
-
-
 def load_config(path: Union[str, Path]) -> Dict[str, Any]:
     """Load configuration from YAML file."""
     with open(path, 'r') as f:
@@ -143,14 +117,3 @@ def save_config(config: Dict[str, Any], path: Union[str, Path]) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, 'w') as f:
         yaml.dump(config, f, default_flow_style=False)
-
-
-# Color palette for different approaches (for consistent visualizations)
-COLORS = {
-    "baseline": "#2ecc71",      # Green
-    "qaoa": "#3498db",          # Blue
-    "superposition": "#9b59b6", # Purple
-    "gates": "#e74c3c",         # Red
-    "error_correction": "#f39c12",  # Orange
-    "integrated": "#1abc9c",    # Teal
-}
