@@ -2,7 +2,7 @@
 
 **Purpose:** This file provides complete context about the dissertation project for AI assistants (like Claude, GPT, etc.) to understand the project quickly and provide accurate, contextual assistance.
 
-**Last Updated:** December 01, 2025
+**Last Updated:** December 17, 2025
 
 ---
 
@@ -300,6 +300,65 @@ Utilities: NumPy, Pandas, Matplotlib
 - RAM: 32GB
 
 **Critical:** No quantum hardware needed!
+
+---
+
+## 🔧 Standard Configuration (CRITICAL)
+
+### Architecture Parameters (MUST BE CONSISTENT)
+
+All notebooks must use these **exact** parameters for fair comparison:
+
+```python
+# RSSM World Model Architecture
+stoch_dim = 64          # Stochastic state dimension
+deter_dim = 512         # Deterministic state dimension
+hidden_dim = 512        # Hidden layer dimension
+encoder_hidden = [512, 512]    # Encoder MLP layers
+decoder_hidden = [512, 512]    # Decoder MLP layers
+predictor_hidden = [512, 512]  # Reward/Continue predictor layers
+
+# Combined state dimension
+state_dim = deter_dim + stoch_dim  # = 576
+```
+
+### Training Parameters (MUST BE CONSISTENT)
+
+```python
+# Training Configuration
+batch_size = 32         # Batch size for training
+seq_len = 20            # Sequence length
+num_steps = 10000       # Training steps (CartPole)
+learning_rate = 3e-4    # Learning rate (AdamW)
+kl_weight = 1.0         # KL divergence weight
+num_episodes = 100      # Episodes for data collection
+```
+
+### Standard Seeds (REQUIRED)
+
+For statistical validity, ALL notebooks must run experiments with these 5 seeds:
+
+```python
+EXPERIMENT_SEEDS = [42, 123, 456, 789, 1024]
+```
+
+### Required Notebook Components
+
+Every experiment notebook (02-08) **MUST** include these sections in Section 7 (Experiments):
+
+| Section | Name | Purpose |
+|---------|------|---------|
+| **7.1** | Multi-Seed Experiments | Run training with all 5 seeds, aggregate with mean ± std |
+| **7.2** | Test Set Evaluation | Evaluate on held-out data (different seeds), compute generalization gap |
+| **7.3** | Long-Horizon Prediction | Test imagination accuracy at horizons [5, 10, 15, 20, 30, 40, 50] |
+
+### Why This Matters
+
+- **Fair Comparison:** All approaches must use identical architecture to isolate the effect of quantum-inspired methods
+- **Reproducibility:** Standard seeds ensure results can be replicated
+- **Statistical Validity:** Multi-seed experiments provide confidence intervals
+- **Generalization:** Test set evaluation reveals overfitting
+- **Model Quality:** Long-horizon prediction tests true dynamics learning
 
 ---
 
@@ -990,6 +1049,7 @@ For each experiment:
 |---------|------|---------|--------|
 | 1.0 | Nov 11, 2025 | Initial CLAUDE.md creation | Saurabh Jalendra |
 | 1.1 | Dec 01, 2025 | Updated: All environments now REQUIRED (Reacher, Atari included), Integrated approach now REQUIRED, Comprehensive experiment plan with ~420 runs | Saurabh Jalendra |
+| 1.2 | Dec 17, 2025 | Added: Standard Configuration section with architecture params (stoch=64, deter=512, hidden=512), training params (batch=32, seq=20, lr=3e-4), standard seeds [42,123,456,789,1024], required notebook components (multi-seed, test set, long-horizon) | Saurabh Jalendra |
 
 ---
 
@@ -1037,6 +1097,23 @@ A: Minimum 5, ideally 10 for final comparison.
 **Q: What if we run out of time?**
 A: Reduce to 3-4 approaches instead of 6.
 
+### Configuration Questions
+
+**Q: What architecture dimensions should I use?**
+A: ALWAYS use stoch_dim=64, deter_dim=512, hidden_dim=512, all hidden layers [512, 512]. See "Standard Configuration" section.
+
+**Q: What training parameters are standard?**
+A: batch_size=32, seq_len=20, num_steps=10000, lr=3e-4, kl_weight=1.0. See "Standard Configuration" section.
+
+**Q: What seeds should experiments use?**
+A: [42, 123, 456, 789, 1024] - these 5 seeds are REQUIRED for all multi-seed experiments.
+
+**Q: What sections must every notebook have?**
+A: Section 7 must include: 7.1 Multi-Seed Experiments, 7.2 Test Set Evaluation, 7.3 Long-Horizon Prediction Test.
+
+**Q: Why is consistency so important?**
+A: Fair comparison requires identical architecture. The ONLY difference between approaches should be the quantum-inspired enhancement, not architecture variations.
+
 ---
 
 ## 📬 Contact for Clarifications
@@ -1070,7 +1147,7 @@ Even if quantum-inspired methods don't outperform classical approaches, understa
 
 ---
 
-**Last Updated:** December 01, 2025
+**Last Updated:** December 17, 2025
 **Status:** Active Development - Phase 2 (Quantum-Inspired Development)
 **Next Review:** December 15, 2025
 
