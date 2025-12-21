@@ -351,7 +351,7 @@ jupyter notebook analysis/notebooks/results_analysis.ipynb
 dissertation-quantum-world-models/
 │
 ├── README.md                          # This file
-├── CLAUDE.md                          # AI assistant context & memory
+├── PROJECT_NOTES.md                   # Project configuration & notes
 ├── requirements.txt                   # Python dependencies
 ├── setup.py                           # Package installation
 ├── .gitignore                         # Git ignore rules

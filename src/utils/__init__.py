@@ -117,3 +117,18 @@ def save_config(config: Dict[str, Any], path: Union[str, Path]) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, 'w') as f:
         yaml.dump(config, f, default_flow_style=False)
+
+
+# Alias for backwards compatibility (some notebooks use Timer instead of timer)
+Timer = timer
+
+
+# Standard color palette for visualizations (consistent across all notebooks)
+COLORS = {
+    "baseline": "#2ecc71",      # Green
+    "qaoa": "#3498db",          # Blue
+    "superposition": "#9b59b6", # Purple
+    "gates": "#e74c3c",         # Red
+    "error_correction": "#f39c12",  # Orange
+    "integrated": "#1abc9c",    # Teal
+}
