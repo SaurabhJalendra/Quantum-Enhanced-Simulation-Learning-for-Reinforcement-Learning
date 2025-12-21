@@ -20,97 +20,97 @@
     "bonferroni_alpha": 0.025
   },
   "sample_efficiency": {
-    "target_loss": 3.054251100023587,
-    "ensemble_epochs_to_target": 45.6,
-    "single_epochs_to_target": 46.0
+    "target_loss": 1.7908566335837044,
+    "ensemble_epochs_to_target": 34.4,
+    "single_epochs_to_target": 35.0
   },
   "training_speed": {
-    "ensemble_mean_time": 30.938178080000217,
-    "ensemble_std_time": 9.447287081601656
+    "ensemble_mean_time": 76.20081925392151,
+    "ensemble_std_time": 6.8595507102274365
   },
   "prediction_accuracy": {
-    "ensemble_test_mse_mean": 0.22101272642612457,
-    "ensemble_test_mse_std": 0.07560868460731232,
-    "single_test_mse_mean": 0.24113352596759796,
-    "single_test_mse_std": 0.06487140265766135
+    "ensemble_test_mse_mean": 0.0025927275186404587,
+    "ensemble_test_mse_std": 0.000742223084868698,
+    "single_test_mse_mean": 0.003963970066979528,
+    "single_test_mse_std": 0.0022313811641253597
   },
   "final_performance": {
-    "ensemble_loss_mean": 3.1922733163833614,
-    "ensemble_loss_std": 0.3582318249888219,
-    "single_loss_mean": 3.2150011579195654,
-    "single_loss_std": 0.344600134252442
+    "ensemble_loss_mean": 1.6136060984929401,
+    "ensemble_loss_std": 0.22150939259102828,
+    "single_loss_mean": 1.8851122458775837,
+    "single_loss_std": 0.3422517815441058
   },
   "stability": {
-    "ensemble_loss_std": 0.3582318249888219,
-    "single_loss_std": 0.344600134252442
+    "ensemble_loss_std": 0.22150939259102828,
+    "single_loss_std": 0.3422517815441058
   },
   "robustness": {
-    "mean_robustness_score": 0.0053075310929367936
+    "mean_robustness_score": 0.09571046791776704
   },
   "computational_cost": {
-    "ensemble_params": 290285,
-    "single_params": 58057
+    "ensemble_params": 20885805,
+    "single_params": 4177161
   },
   "statistical_tests": {
     "loss_comparison": {
-      "p_value": 1.0,
-      "cohens_d": -0.057836234390597784,
+      "p_value": 0.30952380952380953,
+      "cohens_d": -0.842404407410004,
       "significant_bonferroni": false,
       "winner": "Ensemble"
     },
     "mse_comparison": {
-      "p_value": 0.8412698412698413,
-      "cohens_d": -0.2554703947026129,
+      "p_value": 0.42063492063492064,
+      "cohens_d": -0.7375872390511766,
       "significant_bonferroni": false,
       "winner": "Ensemble"
     }
   },
   "confidence_intervals": {
     "ensemble_loss_ci": [
-      2.8782692771308667,
-      3.506277355635856
+      1.419444555173555,
+      1.8077676418123252
     ],
     "single_loss_ci": [
-      2.9129458224239118,
-      3.517056493415219
+      1.5851153322879967,
+      2.1851091594671708
     ],
     "ensemble_mse_ci": [
-      0.15473879230537796,
-      0.2872866605468712
+      0.001942140299923945,
+      0.003243314737356972
     ],
     "single_mse_ci": [
-      0.18427123444138777,
-      0.29799581749380816
+      0.0020080782400343357,
+      0.005919861893924719
     ]
   },
   "raw_results": {
     "ensemble_final_losses": [
-      3.509422540664673,
-      3.4689244270324706,
-      3.4554296731948853,
-      2.645278978347778,
-      2.882310962677002
+      1.44134152730306,
+      2.0308562676111857,
+      1.5393682479858397,
+      1.4246208985646565,
+      1.6318435509999591
     ],
     "single_final_losses": [
-      3.62096107006073,
-      3.4321032762527466,
-      3.397369146347046,
-      2.702302873134613,
-      2.922269423802694
+      1.417762041091919,
+      1.7457828919092815,
+      2.4414422512054443,
+      1.774121840794881,
+      2.046452204386393
     ],
     "ensemble_test_mses": [
-      0.23158104717731476,
-      0.3103961646556854,
-      0.28506144881248474,
-      0.10072436928749084,
-      0.1773006021976471
+      0.0020179408602416515,
+      0.0038151396438479424,
+      0.0026188362389802933,
+      0.0016633387422189116,
+      0.002848382107913494
     ],
     "single_test_mses": [
-      0.25039517879486084,
-      0.3411962687969208,
-      0.2508932948112488,
-      0.1382475197315216,
-      0.2249353677034378
+      0.0024920329451560974,
+      0.003030118066817522,
+      0.0034450069069862366,
+      0.0024843893479555845,
+      0.008368303067982197
     ]
   }
 }
