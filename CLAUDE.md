@@ -344,13 +344,13 @@ EXPERIMENT_SEEDS = [42, 123, 456, 789, 1024]
 
 ### Required Notebook Components
 
-Every experiment notebook (02-08) **MUST** include these sections in Section 7 (Experiments):
+Every experiment notebook (02-08) **MUST** include these components in the Experiments section:
 
-| Section | Name | Purpose |
-|---------|------|---------|
-| **7.1** | Multi-Seed Experiments | Run training with all 5 seeds, aggregate with mean ± std |
-| **7.2** | Test Set Evaluation | Evaluate on held-out data (different seeds), compute generalization gap |
-| **7.3** | Long-Horizon Prediction | Test imagination accuracy at horizons [5, 10, 15, 20, 30, 40, 50] |
+| Component | Purpose |
+|-----------|---------|
+| **Multi-Seed Experiments** | Run training with all 5 seeds, aggregate with mean ± std |
+| **Test Set Evaluation** | Evaluate on held-out data (different seeds), compute generalization gap |
+| **Long-Horizon Prediction** | Test imagination accuracy at horizons [5, 10, 15, 20, 30, 40, 50] |
 
 ### Why This Matters
 
@@ -1108,8 +1108,8 @@ A: batch_size=32, seq_len=20, num_steps=10000, lr=3e-4, kl_weight=1.0. See "Stan
 **Q: What seeds should experiments use?**
 A: [42, 123, 456, 789, 1024] - these 5 seeds are REQUIRED for all multi-seed experiments.
 
-**Q: What sections must every notebook have?**
-A: Section 7 must include: 7.1 Multi-Seed Experiments, 7.2 Test Set Evaluation, 7.3 Long-Horizon Prediction Test.
+**Q: What components must every notebook have?**
+A: The Experiments section must include: Multi-Seed Experiments, Test Set Evaluation, and Long-Horizon Prediction Test.
 
 **Q: Why is consistency so important?**
 A: Fair comparison requires identical architecture. The ONLY difference between approaches should be the quantum-inspired enhancement, not architecture variations.

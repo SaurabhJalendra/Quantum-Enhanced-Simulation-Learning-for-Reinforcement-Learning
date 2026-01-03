@@ -119,11 +119,7 @@ def save_config(config: Dict[str, Any], path: Union[str, Path]) -> None:
         yaml.dump(config, f, default_flow_style=False)
 
 
-# Alias for backwards compatibility (some notebooks use Timer instead of timer)
-Timer = timer
-
-
-# Standard color palette for visualizations (consistent across all notebooks)
+# Standard color palette for consistent visualizations across all notebooks
 COLORS = {
     "baseline": "#2ecc71",      # Green
     "qaoa": "#3498db",          # Blue
@@ -131,4 +127,32 @@ COLORS = {
     "gates": "#e74c3c",         # Red
     "error_correction": "#f39c12",  # Orange
     "integrated": "#1abc9c",    # Teal
+    # Additional colors for methods within notebooks
+    "standard": "#2ecc71",      # Green (same as baseline)
+    "amplitude": "#9b59b6",     # Purple
+    "interference": "#e74c3c",  # Red
 }
+
+
+class Timer:
+    """Class-based timer for more flexible timing operations."""
+
+    def __init__(self, name: str = "Operation"):
+        self.name = name
+        self.start_time = None
+        self.elapsed = None
+
+    def __enter__(self):
+        self.start_time = time.perf_counter()
+        return self
+
+    def __exit__(self, *args):
+        self.elapsed = time.perf_counter() - self.start_time
+        print(f"{self.name}: {self.elapsed:.4f}s")
+
+    def get_elapsed(self) -> float:
+        if self.elapsed is not None:
+            return self.elapsed
+        elif self.start_time is not None:
+            return time.perf_counter() - self.start_time
+        return 0.0
