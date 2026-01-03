@@ -2,37 +2,37 @@
   "amplitude_vs_standard": {
     "method1": "Amplitude",
     "method2": "Standard",
-    "mean1": 1.0023007214069366,
-    "mean2": 1.002243617773056,
-    "std1": 0.00047594430253137393,
-    "std2": 0.0005553609836971893,
-    "p_value": 0.1961654649938247,
-    "cohens_d": 0.11041361639168483,
+    "mean1": 1.0043301343917848,
+    "mean2": 1.0047598206996917,
+    "std1": 0.0011407402308862336,
+    "std2": 0.0019206195297306018,
+    "p_value": 0.2906185348496557,
+    "cohens_d": -0.2720278042604917,
     "significant": false,
-    "winner": "Standard"
+    "winner": "Amplitude"
   },
   "interference_vs_standard": {
     "method1": "Interference",
     "method2": "Standard",
-    "mean1": 1.0023356691002845,
-    "mean2": 1.002243617773056,
-    "std1": 0.00034591767341893704,
-    "std2": 0.0005553609836971893,
-    "p_value": 0.0019873854943174927,
-    "cohens_d": 0.19896657257399855,
+    "mean1": 1.003942697942257,
+    "mean2": 1.0047598206996917,
+    "std1": 0.0005739547898784309,
+    "std2": 0.0019206195297306018,
+    "p_value": 0.0029785870175353395,
+    "cohens_d": -0.5764827828424213,
     "significant": true,
-    "winner": "Standard"
+    "winner": "Interference"
   },
   "interference_vs_amplitude": {
     "method1": "Interference",
     "method2": "Amplitude",
-    "mean1": 1.0023356691002845,
-    "mean2": 1.0023007214069366,
-    "std1": 0.00034591767341893704,
-    "std2": 0.00047594430253137393,
-    "p_value": 0.08697141203628632,
-    "cohens_d": 0.08400038234196987,
-    "significant": false,
-    "winner": "Amplitude"
+    "mean1": 1.003942697942257,
+    "mean2": 1.0043301343917848,
+    "std1": 0.0005739547898784309,
+    "std2": 0.0011407402308862336,
+    "p_value": 0.03222323870058329,
+    "cohens_d": -0.42906865656525034,
+    "significant": true,
+    "winner": "Interference"
   }
 }
