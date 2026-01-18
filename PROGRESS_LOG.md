@@ -49,6 +49,8 @@
 | 2025-12-21 | e0bcf62 | Reorganize notebooks by phase, fix architecture consistency |
 | 2025-12-21 | 673d895 | Update error correction results from verification run |
 | 2026-01-03 | e3ecec3 | Add selective integration notebook (06c), cleanup scripts |
+| 2026-01-18 | 0e92af3 | Add comprehensive PROGRESS_LOG.md |
+| 2026-01-18 | 41a7d5b | Critical bug fixes (error_correction seeds, Bonferroni alpha) |
 
 ---
 
@@ -197,6 +199,44 @@ Multiple bugs fixed in the fully integrated notebook:
 
 ---
 
+### January 18, 2026 - Critical Bug Fixes & Audit
+
+**What was done:**
+
+#### Comprehensive Project Audit
+Performed thorough analysis of all notebooks to verify conceptual, structural, and implementation correctness:
+
+| Notebook | Grade | Key Finding |
+|----------|-------|-------------|
+| 02 (Baseline) | A- | RSSM implementation correct |
+| 03 (QAOA) | D | Conceptually flawed - wrong problem domain |
+| 04 (Superposition) | B- | Reasonable concept, NOT statistically significant |
+| 05 (Gates) | D+ | Fixed transformations hurt learning |
+| 06 (Error Correction) | B/F | Good concept, critical seed bug |
+| 07 (Comparison) | B+ | Methodology correct, bugs fixed |
+
+#### Critical Bugs Fixed
+
+1. **Error Correction Zero-Variance Bug (CRITICAL)**
+   - **Problem:** `torch.manual_seed(42 + i * 1000)` in EnsembleModel ignored experiment seed
+   - **Impact:** All 5 seeds produced identical results (std=0.0)
+   - **Fix:** Added `base_seed` parameter, pass experiment seed when creating ensemble
+   - **Files:** 06_error_correction.ipynb, 07_comprehensive_comparison.ipynb
+
+2. **Bonferroni Alpha Correction**
+   - **Problem:** Using 0.025 instead of 0.00625 for 8 comparisons
+   - **Calculation:** 4 approaches × 2 metrics = 8 tests, α = 0.05/8 = 0.00625
+   - **Fix:** Updated bonferroni_alpha to 0.00625
+   - **File:** 07_comprehensive_comparison.ipynb
+
+#### Created Fix Documentation
+- `fix_all_issues.py`: Script documenting all fixes and their rationale
+- `docs/training_metrics_equivalence.md`: Documentation on steps vs epochs
+
+**Committed:** 41a7d5b - fix: Critical bug fixes for error correction and statistical tests
+
+---
+
 ## Experiment Results Summary
 
 ### Individual Approach Performance (Notebook 07 Results)
@@ -274,20 +314,28 @@ Multiple bugs fixed in the fully integrated notebook:
 **Status:** DOCUMENTED (Expected behavior for dissertation)
 
 ### Issue 6: Error Correction Zero Variance
-**Date:** January 2, 2026
-**Notebook:** 07_comprehensive_comparison.ipynb
+**Date:** January 2, 2026 (Fixed: January 18, 2026)
+**Notebook:** 06_error_correction.ipynb, 07_comprehensive_comparison.ipynb
 **Issue:** Error correction shows ZERO variance across all 5 seeds (std=0.0)
-**Root Cause:** Bug in how seeds are applied to ensemble
-**Solution:** Pending investigation
-**Status:** PENDING
+**Root Cause:** `torch.manual_seed(42 + i * 1000)` in EnsembleModel ignores experiment seed
+**Solution:** Added `base_seed` parameter to EnsembleModel; pass experiment seed when creating ensemble
+**Status:** RESOLVED (commit 41a7d5b)
 
 ### Issue 7: collect_data() Seed Parameter
 **Date:** January 3, 2026
 **Notebook:** 08_ablation_studies.ipynb
 **Error:** `TypeError: collect_data() got an unexpected keyword argument 'seed'`
 **Root Cause:** Function signature doesn't accept seed parameter
-**Solution:** Pending fix
-**Status:** PENDING
+**Solution:** Verified - function already has seed parameter (was fixed in earlier session)
+**Status:** RESOLVED
+
+### Issue 8: Bonferroni Alpha Too Lenient
+**Date:** January 18, 2026
+**Notebook:** 07_comprehensive_comparison.ipynb
+**Issue:** Using α = 0.025 instead of correct 0.00625 for 8 comparisons
+**Root Cause:** Miscalculation: 4 approaches × 2 metrics = 8 comparisons, so α = 0.05/8 = 0.00625
+**Solution:** Updated bonferroni_alpha to 0.00625
+**Status:** RESOLVED (commit 41a7d5b)
 
 ---
 
@@ -337,18 +385,20 @@ The research question "Do quantum-inspired methods improve world model training?
 ## Pending Tasks
 
 ### High Priority
-1. [ ] Fix notebook 07 error_correction zero variance bug
-2. [ ] Fix notebook 08 collect_data seed parameter
-3. [ ] Run notebook 09 for final results analysis
+1. [x] ~~Fix notebook 07 error_correction zero variance bug~~ (DONE - commit 41a7d5b)
+2. [x] ~~Fix notebook 08 collect_data seed parameter~~ (DONE - was already fixed)
+3. [x] ~~Fix Bonferroni alpha (0.025 → 0.00625)~~ (DONE - commit 41a7d5b)
+4. [ ] Re-run notebook 07 with fixed seeds to validate error_correction
+5. [ ] Run notebook 09 for final results analysis
 
 ### Medium Priority
-4. [ ] Complete DMControl experiments (Walker, Cheetah, Reacher)
-5. [ ] Run Atari experiments (Pong, Breakout)
-6. [ ] Generate final figures for dissertation
+6. [ ] Complete DMControl experiments (Walker, Cheetah, Reacher)
+7. [ ] Run Atari experiments (Pong, Breakout)
+8. [ ] Generate final figures for dissertation
 
 ### Low Priority
-7. [ ] Consider Git LFS for large .pt files (>50MB warning)
-8. [ ] Additional ablation studies if time permits
+9. [ ] Consider Git LFS for large .pt files (>50MB warning)
+10. [ ] Additional ablation studies if time permits
 
 ---
 
@@ -396,10 +446,11 @@ Quantum-Enhanced-Simulation-Learning-for-Reinforcement-Learning/
 
 1. **Standard Seeds:** Always use [42, 123, 456, 789, 1024]
 2. **Architecture:** stoch=64, deter=512, hidden=512, all hidden layers [512, 512]
-3. **Bonferroni α:** 0.025 for multiple comparisons
+3. **Bonferroni α:** 0.00625 for multiple comparisons (0.05 / 8 = 4 approaches × 2 metrics)
 4. **Action Encoding:** One-hot (action_dim=2 for CartPole)
 5. **Key Insight:** Selective integration > Full integration
+6. **EnsembleModel:** Always pass `base_seed=seed` when creating ensemble models
 
 ---
 
-*Last Updated: January 3, 2026*
+*Last Updated: January 18, 2026*
