@@ -47,15 +47,15 @@ class QuantumTunnelingOptimizer:
         Model parameters to optimize
     lr : float, default=3e-4
         Learning rate (passed to base optimizer)
-    tunneling_strength : float, default=0.1
-        Initial strength of tunneling perturbations
-    annealing_rate : float, default=0.9995
+    tunneling_strength : float, default=0.001
+        Initial strength of tunneling perturbations (relative to param magnitude)
+    annealing_rate : float, default=0.9999
         Rate at which tunneling strength decreases (per step)
-    tunneling_frequency : int, default=10
+    tunneling_frequency : int, default=100
         Apply tunneling every N steps (not every step)
-    min_tunneling : float, default=1e-6
+    min_tunneling : float, default=1e-8
         Minimum tunneling strength (never goes below this)
-    stuck_threshold : int, default=100
+    stuck_threshold : int, default=500
         If loss doesn't improve for this many steps, increase tunneling
     base_optimizer : str, default='adamw'
         Base optimizer to use ('adam', 'adamw', 'sgd')
@@ -76,11 +76,11 @@ class QuantumTunnelingOptimizer:
         self,
         params: Iterator[nn.Parameter],
         lr: float = 3e-4,
-        tunneling_strength: float = 0.1,
-        annealing_rate: float = 0.9995,
-        tunneling_frequency: int = 10,
-        min_tunneling: float = 1e-6,
-        stuck_threshold: int = 100,
+        tunneling_strength: float = 0.001,  # Reduced from 0.1 - was causing explosion
+        annealing_rate: float = 0.9999,     # Slower annealing for stability
+        tunneling_frequency: int = 100,      # Less frequent tunneling
+        min_tunneling: float = 1e-8,
+        stuck_threshold: int = 500,          # More patience before increasing noise
         base_optimizer: str = 'adamw'
     ):
         self.params = list(params)
@@ -160,8 +160,9 @@ class QuantumTunnelingOptimizer:
         effective_tunneling = self.tunneling_strength
 
         # Increase tunneling if stuck (like increasing temperature in annealing)
+        # But cap at 2x to avoid destabilization
         if self.steps_since_improvement > self.stuck_threshold:
-            stuck_factor = min(5.0, 1 + self.steps_since_improvement / self.stuck_threshold)
+            stuck_factor = min(2.0, 1 + 0.5 * self.steps_since_improvement / self.stuck_threshold)
             effective_tunneling *= stuck_factor
 
         # Apply tunneling to each parameter
