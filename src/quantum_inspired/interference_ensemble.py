@@ -326,11 +326,19 @@ class InterferenceEnsemble(nn.Module):
         weights_expanded = weights.view(self.num_models, 1, 1, 1)
         combined_pred = (predictions * weights_expanded).sum(dim=0)
 
-        # Combine states similarly
+        # Combine states similarly (only tensor entries, skip distributions)
         combined_states = {}
         for key in all_states[0].keys():
-            stacked = torch.stack([s[key] for s in all_states], dim=0)
-            combined_states[key] = (stacked * weights.view(-1, 1, 1)).sum(dim=0)
+            if key in ('priors', 'posteriors'):
+                combined_states[key] = all_states[0][key]  # Keep first model's distributions
+                continue
+            vals = [s[key] for s in all_states]
+            if not isinstance(vals[0], torch.Tensor):
+                continue
+            stacked = torch.stack(vals, dim=0)
+            # Reshape weights to match stacked tensor dimensions
+            w_shape = [-1] + [1] * (stacked.dim() - 1)
+            combined_states[key] = (stacked * weights.view(*w_shape)).sum(dim=0)
 
         # Track statistics
         self.prediction_stats.append({

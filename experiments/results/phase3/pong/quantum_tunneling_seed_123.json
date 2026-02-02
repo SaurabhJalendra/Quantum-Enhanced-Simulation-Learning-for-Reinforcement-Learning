@@ -1,0 +1,15 @@
+{
+  "approach": "quantum_tunneling",
+  "seed": 123,
+  "train_obs_mse": 0.0002986611187225208,
+  "train_reward_mse": 0.023553578834980726,
+  "test_obs_mse": 0.0002866339054889977,
+  "test_reward_mse": 0.026560406014323235,
+  "long_horizon": {
+    "5": 0.00028508587274700403,
+    "10": 0.00028525947709567845
+  },
+  "final_train_loss": 0.012716338969767094,
+  "time_seconds": 885.814795255661,
+  "num_params": 8914499
+}

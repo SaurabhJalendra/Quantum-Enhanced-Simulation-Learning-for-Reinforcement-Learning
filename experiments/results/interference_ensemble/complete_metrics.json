@@ -1,0 +1,48 @@
+{
+  "approach": "interference_ensemble",
+  "description": "Interference-based ensemble with error correction",
+  "config": {
+    "stoch_dim": 64,
+    "deter_dim": 512,
+    "hidden_dim": 512,
+    "num_models": 5,
+    "interference_strength": 0.7,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  },
+  "final_performance": {
+    "test_mse_mean": 0.10869396775960923,
+    "test_mse_std": 0.030265870239864295,
+    "train_mse_mean": 0.0070653936825692655,
+    "train_mse_std": 0.001458285024831027,
+    "model_params": 23671076
+  },
+  "raw_results": {
+    "test_mses": [
+      0.09718461334705353,
+      0.07894106209278107,
+      0.09629413485527039,
+      0.1041494831442833,
+      0.16690054535865784
+    ],
+    "train_mses": [
+      0.0070670307613909245,
+      0.006060550920665264,
+      0.008864832110702991,
+      0.004925397224724293,
+      0.008409157395362854
+    ],
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  }
+}

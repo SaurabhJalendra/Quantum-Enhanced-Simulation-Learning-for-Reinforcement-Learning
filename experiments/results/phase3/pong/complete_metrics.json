@@ -1,0 +1,406 @@
+{
+  "experiment": "phase3_atari_pong",
+  "environment": {
+    "name": "ALE/Pong-v5",
+    "obs_shape": [
+      1,
+      84,
+      84
+    ],
+    "action_dim": 6,
+    "action_type": "discrete"
+  },
+  "config": {
+    "stoch_dim": 64,
+    "deter_dim": 512,
+    "hidden_dim": 512,
+    "cnn_flatten_dim": 4096,
+    "batch_size": 16,
+    "seq_len": 20,
+    "num_steps": 10000,
+    "learning_rate": 0.0003,
+    "kl_weight": 1.0,
+    "grad_clip": 100.0,
+    "num_episodes": 50,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  },
+  "summary": {
+    "baseline": {
+      "test_obs_mse_mean": 0.0002929008757928386,
+      "test_obs_mse_std": 1.3097249536968635e-05,
+      "train_obs_mse_mean": 0.0002876124653266743,
+      "train_obs_mse_std": 8.687196051192216e-06,
+      "test_reward_mse_mean": 0.02249062256887555,
+      "test_reward_mse_std": 0.0013971408335151753,
+      "time_mean": 904.9169013023377,
+      "num_params": 8914499,
+      "num_seeds": 5
+    },
+    "quantum_tunneling": {
+      "test_obs_mse_mean": 0.00028647200728300955,
+      "test_obs_mse_std": 1.8125655533987976e-06,
+      "train_obs_mse_mean": 0.00029069742420688275,
+      "train_obs_mse_std": 7.224280353556998e-06,
+      "test_reward_mse_mean": 0.023860166408121587,
+      "test_reward_mse_std": 0.001688317324022827,
+      "time_mean": 883.2712152957916,
+      "num_params": 8914499,
+      "num_seeds": 5
+    },
+    "superposition": {
+      "test_obs_mse_mean": 0.0002879403746919707,
+      "test_obs_mse_std": 1.1465880385705614e-05,
+      "train_obs_mse_mean": 0.0002786216186359524,
+      "train_obs_mse_std": 4.575684210183625e-06,
+      "test_reward_mse_mean": 0.0228409087844193,
+      "test_reward_mse_std": 0.001988481199321068,
+      "time_mean": 1226.6055300712585,
+      "num_params": 8914499,
+      "num_seeds": 5
+    },
+    "entanglement": {
+      "test_obs_mse_mean": 0.00030142560950480407,
+      "test_obs_mse_std": 1.1185489633295382e-05,
+      "train_obs_mse_mean": 0.0002933354285778478,
+      "train_obs_mse_std": 1.0365764981434069e-05,
+      "test_reward_mse_mean": 0.023278975300490855,
+      "test_reward_mse_std": 0.0021998353634438404,
+      "time_mean": 802.8007122039795,
+      "num_params": 9440451,
+      "num_seeds": 5
+    }
+  },
+  "raw_results": [
+    {
+      "approach": "baseline",
+      "seed": 42,
+      "train_obs_mse": 0.00027906453178729864,
+      "train_reward_mse": 0.022043698467314243,
+      "test_obs_mse": 0.0003141475288430229,
+      "test_reward_mse": 0.02216995134949684,
+      "long_horizon": {
+        "5": 0.00027570530073717237,
+        "10": 0.00027666345704346895
+      },
+      "final_train_loss": 0.015687542036175728,
+      "time_seconds": 910.6517035961151,
+      "num_params": 8914499
+    },
+    {
+      "approach": "baseline",
+      "seed": 123,
+      "train_obs_mse": 0.00029187254840508104,
+      "train_reward_mse": 0.02207383057102561,
+      "test_obs_mse": 0.00028692774649243804,
+      "test_reward_mse": 0.02238469384610653,
+      "long_horizon": {
+        "5": 0.00027486568433232605,
+        "10": 0.00026614233502186835
+      },
+      "final_train_loss": 0.031099971383810043,
+      "time_seconds": 901.5198619365692,
+      "num_params": 8914499
+    },
+    {
+      "approach": "baseline",
+      "seed": 456,
+      "train_obs_mse": 0.0002769266749965027,
+      "train_reward_mse": 0.023866785503923894,
+      "test_obs_mse": 0.00027517389389686286,
+      "test_reward_mse": 0.0209451025351882,
+      "long_horizon": {
+        "5": 0.00030447865719906986,
+        "10": 0.0003071167739108205
+      },
+      "final_train_loss": 0.018805665895342827,
+      "time_seconds": 901.7659778594971,
+      "num_params": 8914499
+    },
+    {
+      "approach": "baseline",
+      "seed": 789,
+      "train_obs_mse": 0.0003005687613040209,
+      "train_reward_mse": 0.023289952892810106,
+      "test_obs_mse": 0.0002889635186875239,
+      "test_reward_mse": 0.025106513965874912,
+      "long_horizon": {
+        "5": 0.0003365958691574633,
+        "10": 0.0003389211487956345
+      },
+      "final_train_loss": 0.027654996141791344,
+      "time_seconds": 904.5917401313782,
+      "num_params": 8914499
+    },
+    {
+      "approach": "baseline",
+      "seed": 1024,
+      "train_obs_mse": 0.0002896298101404682,
+      "train_reward_mse": 0.02124107424169779,
+      "test_obs_mse": 0.0002992916910443455,
+      "test_reward_mse": 0.021846851147711278,
+      "long_horizon": {
+        "5": 0.00029117465601302683,
+        "10": 0.0002962742291856557
+      },
+      "final_train_loss": 0.027689972892403603,
+      "time_seconds": 906.0552229881287,
+      "num_params": 8914499
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 42,
+      "train_obs_mse": 0.0002997697098180652,
+      "train_reward_mse": 0.020575772598385812,
+      "test_obs_mse": 0.0002897226688219234,
+      "test_reward_mse": 0.02265350129455328,
+      "long_horizon": {
+        "5": 0.0002722955250646919,
+        "10": 0.00027021783171221614
+      },
+      "final_train_loss": 0.01582852378487587,
+      "time_seconds": 905.0807900428772,
+      "num_params": 8914499
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 123,
+      "train_obs_mse": 0.0002986611187225208,
+      "train_reward_mse": 0.023553578834980726,
+      "test_obs_mse": 0.0002866339054889977,
+      "test_reward_mse": 0.026560406014323235,
+      "long_horizon": {
+        "5": 0.00028508587274700403,
+        "10": 0.00028525947709567845
+      },
+      "final_train_loss": 0.012716338969767094,
+      "time_seconds": 885.814795255661,
+      "num_params": 8914499
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 456,
+      "train_obs_mse": 0.00028486946830525995,
+      "train_reward_mse": 0.020047364477068185,
+      "test_obs_mse": 0.0002861175424186513,
+      "test_reward_mse": 0.025062870420515537,
+      "long_horizon": {
+        "5": 0.000900335144251585,
+        "10": 0.0005842663813382387
+      },
+      "final_train_loss": 0.024641402065753937,
+      "time_seconds": 878.2135212421417,
+      "num_params": 8914499
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 789,
+      "train_obs_mse": 0.00028813062817789614,
+      "train_reward_mse": 0.02701156884431839,
+      "test_obs_mse": 0.00028422450996004047,
+      "test_reward_mse": 0.022972074151039124,
+      "long_horizon": {
+        "5": 0.00028050996479578316,
+        "10": 0.00027836699155159295
+      },
+      "final_train_loss": 0.015715070068836212,
+      "time_seconds": 879.4448792934418,
+      "num_params": 8914499
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 1024,
+      "train_obs_mse": 0.00028205619601067155,
+      "train_reward_mse": 0.022965393494814634,
+      "test_obs_mse": 0.0002856614097254351,
+      "test_reward_mse": 0.022051980160176753,
+      "long_horizon": {
+        "5": 0.0003028517821803689,
+        "10": 0.0002998434938490391
+      },
+      "final_train_loss": 0.022001635283231735,
+      "time_seconds": 867.8020906448364,
+      "num_params": 8914499
+    },
+    {
+      "approach": "superposition",
+      "seed": 42,
+      "train_obs_mse": 0.0002699944205232896,
+      "train_reward_mse": 0.019957619183696807,
+      "test_obs_mse": 0.0002972776506794617,
+      "test_reward_mse": 0.01965817082673311,
+      "long_horizon": {
+        "5": 0.0002955948584713042,
+        "10": 0.0002919315011240542
+      },
+      "final_train_loss": 0.006432622205466032,
+      "time_seconds": 1255.624624967575,
+      "num_params": 8914499
+    },
+    {
+      "approach": "superposition",
+      "seed": 123,
+      "train_obs_mse": 0.0002836611936800182,
+      "train_reward_mse": 0.021757739130407572,
+      "test_obs_mse": 0.0002856652659829706,
+      "test_reward_mse": 0.021481550950556993,
+      "long_horizon": {
+        "5": 0.0002668816305231303,
+        "10": 0.0002639057347550988
+      },
+      "final_train_loss": 0.00610414519906044,
+      "time_seconds": 1255.9678111076355,
+      "num_params": 8914499
+    },
+    {
+      "approach": "superposition",
+      "seed": 456,
+      "train_obs_mse": 0.00028000843594782053,
+      "train_reward_mse": 0.02210889318957925,
+      "test_obs_mse": 0.00027428994071669875,
+      "test_reward_mse": 0.025120143592357636,
+      "long_horizon": {
+        "5": 0.0002731161075644195,
+        "10": 0.0002772191655822098
+      },
+      "final_train_loss": 0.007934748195111752,
+      "time_seconds": 1254.726336479187,
+      "num_params": 8914499
+    },
+    {
+      "approach": "superposition",
+      "seed": 789,
+      "train_obs_mse": 0.00027921530127059666,
+      "train_reward_mse": 0.022683084569871427,
+      "test_obs_mse": 0.0002778753492748365,
+      "test_reward_mse": 0.024109144881367683,
+      "long_horizon": {
+        "5": 0.00026055783382616937,
+        "10": 0.0002622612228151411
+      },
+      "final_train_loss": 0.008340064436197281,
+      "time_seconds": 1257.4224200248718,
+      "num_params": 8914499
+    },
+    {
+      "approach": "superposition",
+      "seed": 1024,
+      "train_obs_mse": 0.00028022874175803736,
+      "train_reward_mse": 0.02082827193662524,
+      "test_obs_mse": 0.0003045936668058857,
+      "test_reward_mse": 0.023835533671081065,
+      "long_horizon": {
+        "5": 0.0002793577150441706,
+        "10": 0.0002774359018076211
+      },
+      "final_train_loss": 0.006454281974583864,
+      "time_seconds": 1109.2864577770233,
+      "num_params": 8914499
+    },
+    {
+      "approach": "entanglement",
+      "seed": 42,
+      "train_obs_mse": 0.0002834124898072332,
+      "train_reward_mse": 0.023265188559889793,
+      "test_obs_mse": 0.0003168944007484242,
+      "test_reward_mse": 0.026883571967482568,
+      "long_horizon": {
+        "5": 0.000261366949416697,
+        "10": 0.00024970259983092546
+      },
+      "final_train_loss": 0.015985991805791855,
+      "time_seconds": 886.0901880264282,
+      "num_params": 9440451
+    },
+    {
+      "approach": "entanglement",
+      "seed": 123,
+      "train_obs_mse": 0.0002872556186048314,
+      "train_reward_mse": 0.02148647801950574,
+      "test_obs_mse": 0.0002823908143909648,
+      "test_reward_mse": 0.02092336444184184,
+      "long_horizon": {
+        "5": 0.0003045970806851983,
+        "10": 0.00030546370544470847
+      },
+      "final_train_loss": 0.030718406662344933,
+      "time_seconds": 889.2605316638947,
+      "num_params": 9440451
+    },
+    {
+      "approach": "entanglement",
+      "seed": 456,
+      "train_obs_mse": 0.0003076078079175204,
+      "train_reward_mse": 0.02087536109611392,
+      "test_obs_mse": 0.000301539569045417,
+      "test_reward_mse": 0.02158290771767497,
+      "long_horizon": {
+        "5": 0.00031470393878407776,
+        "10": 0.0003164494701195508
+      },
+      "final_train_loss": 0.019323905929923058,
+      "time_seconds": 889.7876443862915,
+      "num_params": 9440451
+    },
+    {
+      "approach": "entanglement",
+      "seed": 789,
+      "train_obs_mse": 0.00028428550576791166,
+      "train_reward_mse": 0.02211754834279418,
+      "test_obs_mse": 0.00030615143768955024,
+      "test_reward_mse": 0.022345413733273745,
+      "long_horizon": {
+        "5": 0.00028854215634055436,
+        "10": 0.00028836209094151855
+      },
+      "final_train_loss": 0.018925653770565987,
+      "time_seconds": 798.331995010376,
+      "num_params": 9440451
+    },
+    {
+      "approach": "entanglement",
+      "seed": 1024,
+      "train_obs_mse": 0.0003041157207917422,
+      "train_reward_mse": 0.021835371665656567,
+      "test_obs_mse": 0.0003001518256496638,
+      "test_reward_mse": 0.024659618642181157,
+      "long_horizon": {
+        "5": 0.0002782468218356371,
+        "10": 0.00028058828320354223
+      },
+      "final_train_loss": 0.02787616476416588,
+      "time_seconds": 550.5332019329071,
+      "num_params": 9440451
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 42,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 123,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 456,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 789,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 1024,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    }
+  ]
+}

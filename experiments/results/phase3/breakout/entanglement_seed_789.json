@@ -1,0 +1,15 @@
+{
+  "approach": "entanglement",
+  "seed": 789,
+  "train_obs_mse": 0.0005298235744703561,
+  "train_reward_mse": 0.0068366423482075335,
+  "test_obs_mse": 0.0005391109734773636,
+  "test_reward_mse": 0.005282512307167054,
+  "long_horizon": {
+    "5": 0.0006172513240016997,
+    "10": 0.0006303695263341069
+  },
+  "final_train_loss": 0.009867412969470024,
+  "time_seconds": 881.5437743663788,
+  "num_params": 9439427
+}

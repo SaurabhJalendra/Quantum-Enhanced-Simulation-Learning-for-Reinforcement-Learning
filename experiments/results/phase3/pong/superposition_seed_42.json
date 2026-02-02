@@ -1,0 +1,15 @@
+{
+  "approach": "superposition",
+  "seed": 42,
+  "train_obs_mse": 0.0002699944205232896,
+  "train_reward_mse": 0.019957619183696807,
+  "test_obs_mse": 0.0002972776506794617,
+  "test_reward_mse": 0.01965817082673311,
+  "long_horizon": {
+    "5": 0.0002955948584713042,
+    "10": 0.0002919315011240542
+  },
+  "final_train_loss": 0.006432622205466032,
+  "time_seconds": 1255.624624967575,
+  "num_params": 8914499
+}

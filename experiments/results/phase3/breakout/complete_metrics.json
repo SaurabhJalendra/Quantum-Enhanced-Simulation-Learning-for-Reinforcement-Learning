@@ -1,0 +1,406 @@
+{
+  "experiment": "phase3_atari_breakout",
+  "environment": {
+    "name": "ALE/Breakout-v5",
+    "obs_shape": [
+      1,
+      84,
+      84
+    ],
+    "action_dim": 4,
+    "action_type": "discrete"
+  },
+  "config": {
+    "stoch_dim": 64,
+    "deter_dim": 512,
+    "hidden_dim": 512,
+    "cnn_flatten_dim": 4096,
+    "batch_size": 16,
+    "seq_len": 20,
+    "num_steps": 10000,
+    "learning_rate": 0.0003,
+    "kl_weight": 1.0,
+    "grad_clip": 100.0,
+    "num_episodes": 50,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  },
+  "summary": {
+    "baseline": {
+      "test_obs_mse_mean": 0.0005387485038954765,
+      "test_obs_mse_std": 1.8413634191492546e-05,
+      "train_obs_mse_mean": 0.0005391143658198417,
+      "train_obs_mse_std": 2.320377326925177e-05,
+      "test_reward_mse_mean": 0.005356136515656544,
+      "test_reward_mse_std": 0.0019846884484504613,
+      "time_mean": 897.9564682006836,
+      "num_params": 8913475,
+      "num_seeds": 5
+    },
+    "quantum_tunneling": {
+      "test_obs_mse_mean": 0.0005393086629919707,
+      "test_obs_mse_std": 2.289390298287644e-05,
+      "train_obs_mse_mean": 0.0005443490901961923,
+      "train_obs_mse_std": 1.888981732027955e-05,
+      "test_reward_mse_mean": 0.006906812784654904,
+      "test_reward_mse_std": 0.0011814620180517323,
+      "time_mean": 876.816704940796,
+      "num_params": 8913475,
+      "num_seeds": 5
+    },
+    "superposition": {
+      "test_obs_mse_mean": 0.0005312365945428609,
+      "test_obs_mse_std": 1.3353798386146781e-05,
+      "train_obs_mse_mean": 0.0005338593426859006,
+      "train_obs_mse_std": 2.074127837098113e-05,
+      "test_reward_mse_mean": 0.00640515113947913,
+      "test_reward_mse_std": 0.000723141588360676,
+      "time_mean": 1090.0908547401427,
+      "num_params": 8913475,
+      "num_seeds": 5
+    },
+    "entanglement": {
+      "test_obs_mse_mean": 0.0005567680404055863,
+      "test_obs_mse_std": 1.80392337217776e-05,
+      "train_obs_mse_mean": 0.0005443720059702173,
+      "train_obs_mse_std": 4.923809895105747e-05,
+      "test_reward_mse_mean": 0.005230825164544512,
+      "test_reward_mse_std": 0.0009235968711244741,
+      "time_mean": 869.7479499816894,
+      "num_params": 9439427,
+      "num_seeds": 5
+    }
+  },
+  "raw_results": [
+    {
+      "approach": "baseline",
+      "seed": 42,
+      "train_obs_mse": 0.0005066695506684482,
+      "train_reward_mse": 0.005608201251743594,
+      "test_obs_mse": 0.0005257217242615297,
+      "test_reward_mse": 0.006850181661866373,
+      "long_horizon": {
+        "5": 0.000627245637588203,
+        "10": 0.0006254409090615809
+      },
+      "final_train_loss": 0.0037768781185150146,
+      "time_seconds": 910.2149193286896,
+      "num_params": 8913475
+    },
+    {
+      "approach": "baseline",
+      "seed": 123,
+      "train_obs_mse": 0.0005270512803690508,
+      "train_reward_mse": 0.008371386243743473,
+      "test_obs_mse": 0.0005738810170441866,
+      "test_reward_mse": 0.00805190904357005,
+      "long_horizon": {
+        "5": 0.0006461176089942455,
+        "10": 0.0006679320940747857
+      },
+      "final_train_loss": 0.013078901916742325,
+      "time_seconds": 894.2655560970306,
+      "num_params": 8913475
+    },
+    {
+      "approach": "baseline",
+      "seed": 456,
+      "train_obs_mse": 0.0005703354545403272,
+      "train_reward_mse": 0.00838350101839751,
+      "test_obs_mse": 0.000538447024882771,
+      "test_reward_mse": 0.00562426520336885,
+      "long_horizon": {
+        "5": 0.0005855414783582091,
+        "10": 0.0005868638399988413
+      },
+      "final_train_loss": 0.006909320130944252,
+      "time_seconds": 892.7588384151459,
+      "num_params": 8913475
+    },
+    {
+      "approach": "baseline",
+      "seed": 789,
+      "train_obs_mse": 0.0005604353966191411,
+      "train_reward_mse": 0.006221776834354387,
+      "test_obs_mse": 0.0005330191663233564,
+      "test_reward_mse": 0.002821348938232404,
+      "long_horizon": {
+        "5": 0.0005508578033186495,
+        "10": 0.0005670266691595316
+      },
+      "final_train_loss": 0.006675779819488525,
+      "time_seconds": 895.8272769451141,
+      "num_params": 8913475
+    },
+    {
+      "approach": "baseline",
+      "seed": 1024,
+      "train_obs_mse": 0.0005310801469022408,
+      "train_reward_mse": 0.009026807220652699,
+      "test_obs_mse": 0.0005226735869655385,
+      "test_reward_mse": 0.003432977731245046,
+      "long_horizon": {
+        "5": 0.0006093463744036853,
+        "10": 0.0006049337098374963
+      },
+      "final_train_loss": 0.0037424026522785425,
+      "time_seconds": 896.7157502174377,
+      "num_params": 8913475
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 42,
+      "train_obs_mse": 0.000573263835394755,
+      "train_reward_mse": 0.00872327389424754,
+      "test_obs_mse": 0.0005109109682962298,
+      "test_reward_mse": 0.006860638056605239,
+      "long_horizon": {
+        "5": 0.0005543750012293458,
+        "10": 0.0005436775973066688
+      },
+      "final_train_loss": 0.01309793721884489,
+      "time_seconds": 895.9730820655823,
+      "num_params": 8913475
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 123,
+      "train_obs_mse": 0.0005420465487986803,
+      "train_reward_mse": 0.006528948964478332,
+      "test_obs_mse": 0.0005451472708955408,
+      "test_reward_mse": 0.006840917970839655,
+      "long_horizon": {
+        "5": 0.0005105679156258702,
+        "10": 0.0005061559495516121
+      },
+      "final_train_loss": 0.006781667936593294,
+      "time_seconds": 880.2377817630768,
+      "num_params": 8913475
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 456,
+      "train_obs_mse": 0.0005200794548727572,
+      "train_reward_mse": 0.0055969477452890715,
+      "test_obs_mse": 0.0005791445932118222,
+      "test_reward_mse": 0.008702453901059925,
+      "long_horizon": {
+        "5": 0.0004989554872736335,
+        "10": 0.0004927983973175287
+      },
+      "final_train_loss": 0.0036638120654970407,
+      "time_seconds": 869.2889199256897,
+      "num_params": 8913475
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 789,
+      "train_obs_mse": 0.000529930111952126,
+      "train_reward_mse": 0.004984754300676286,
+      "test_obs_mse": 0.0005259803816443309,
+      "test_reward_mse": 0.004985384782048641,
+      "long_horizon": {
+        "5": 0.000467319245217368,
+        "10": 0.0004530877049546689
+      },
+      "final_train_loss": 0.006978882476687431,
+      "time_seconds": 870.718380689621,
+      "num_params": 8913475
+    },
+    {
+      "approach": "quantum_tunneling",
+      "seed": 1024,
+      "train_obs_mse": 0.0005564254999626428,
+      "train_reward_mse": 0.00835939368698746,
+      "test_obs_mse": 0.0005353601009119302,
+      "test_reward_mse": 0.007144669212721055,
+      "long_horizon": {
+        "5": 0.00047515190090052783,
+        "10": 0.00048300728667527437
+      },
+      "final_train_loss": 0.003777266014367342,
+      "time_seconds": 867.8653602600098,
+      "num_params": 8913475
+    },
+    {
+      "approach": "superposition",
+      "seed": 42,
+      "train_obs_mse": 0.000527291008620523,
+      "train_reward_mse": 0.004983386910680565,
+      "test_obs_mse": 0.0005161675653653219,
+      "test_reward_mse": 0.006840853183530271,
+      "long_horizon": {
+        "5": 0.000466065073851496,
+        "10": 0.0004679215489886701
+      },
+      "final_train_loss": 0.0029395397286862135,
+      "time_seconds": 1090.7645325660706,
+      "num_params": 8913475
+    },
+    {
+      "approach": "superposition",
+      "seed": 123,
+      "train_obs_mse": 0.0005405770876677707,
+      "train_reward_mse": 0.006833681347779929,
+      "test_obs_mse": 0.0005254664632957428,
+      "test_reward_mse": 0.00559374591030064,
+      "long_horizon": {
+        "5": 0.0005227426299825311,
+        "10": 0.0005265407962724566
+      },
+      "final_train_loss": 0.0025936083402484655,
+      "time_seconds": 1090.703913450241,
+      "num_params": 8913475
+    },
+    {
+      "approach": "superposition",
+      "seed": 456,
+      "train_obs_mse": 0.0005158705491339788,
+      "train_reward_mse": 0.006524291645837366,
+      "test_obs_mse": 0.000556144624715671,
+      "test_reward_mse": 0.007455390851464472,
+      "long_horizon": {
+        "5": 0.0005337450420483947,
+        "10": 0.0005359692731872201
+      },
+      "final_train_loss": 0.002669312059879303,
+      "time_seconds": 1090.2379479408264,
+      "num_params": 8913475
+    },
+    {
+      "approach": "superposition",
+      "seed": 789,
+      "train_obs_mse": 0.0005146719748154282,
+      "train_reward_mse": 0.006530660693533719,
+      "test_obs_mse": 0.0005280703946482391,
+      "test_reward_mse": 0.0056010044918366475,
+      "long_horizon": {
+        "5": 0.000530635064933449,
+        "10": 0.0005495729856193066
+      },
+      "final_train_loss": 0.0009723375551402569,
+      "time_seconds": 1089.8941314220428,
+      "num_params": 8913475
+    },
+    {
+      "approach": "superposition",
+      "seed": 1024,
+      "train_obs_mse": 0.0005708860931918025,
+      "train_reward_mse": 0.011208395333960652,
+      "test_obs_mse": 0.0005303339246893301,
+      "test_reward_mse": 0.0065347612602636215,
+      "long_horizon": {
+        "5": 0.0005130377830937505,
+        "10": 0.0005260814796201885
+      },
+      "final_train_loss": 0.0026355115696787834,
+      "time_seconds": 1088.8537483215332,
+      "num_params": 8913475
+    },
+    {
+      "approach": "entanglement",
+      "seed": 42,
+      "train_obs_mse": 0.0005764281668234617,
+      "train_reward_mse": 0.006536218652036041,
+      "test_obs_mse": 0.0005619784264126792,
+      "test_reward_mse": 0.004053332246621721,
+      "long_horizon": {
+        "5": 0.0005399432266131043,
+        "10": 0.0005472174962051213
+      },
+      "final_train_loss": 0.007429241202771664,
+      "time_seconds": 841.1730515956879,
+      "num_params": 9439427
+    },
+    {
+      "approach": "entanglement",
+      "seed": 123,
+      "train_obs_mse": 0.0005056955735199154,
+      "train_reward_mse": 0.003753668474018923,
+      "test_obs_mse": 0.0005328975355951115,
+      "test_reward_mse": 0.005299540219129995,
+      "long_horizon": {
+        "5": 0.0005619456060230732,
+        "10": 0.0005787675618194044
+      },
+      "final_train_loss": 0.08238938450813293,
+      "time_seconds": 869.3736069202423,
+      "num_params": 9439427
+    },
+    {
+      "approach": "entanglement",
+      "seed": 456,
+      "train_obs_mse": 0.0006226423021871597,
+      "train_reward_mse": 0.006537171795935137,
+      "test_obs_mse": 0.0005803524807561189,
+      "test_reward_mse": 0.004684067633934319,
+      "long_horizon": {
+        "5": 0.0006692444439977407,
+        "10": 0.0006364518776535988
+      },
+      "final_train_loss": 0.009183712303638458,
+      "time_seconds": 877.9618558883667,
+      "num_params": 9439427
+    },
+    {
+      "approach": "entanglement",
+      "seed": 789,
+      "train_obs_mse": 0.0005298235744703561,
+      "train_reward_mse": 0.0068366423482075335,
+      "test_obs_mse": 0.0005391109734773636,
+      "test_reward_mse": 0.005282512307167054,
+      "long_horizon": {
+        "5": 0.0006172513240016997,
+        "10": 0.0006303695263341069
+      },
+      "final_train_loss": 0.009867412969470024,
+      "time_seconds": 881.5437743663788,
+      "num_params": 9439427
+    },
+    {
+      "approach": "entanglement",
+      "seed": 1024,
+      "train_obs_mse": 0.0004872704128501937,
+      "train_reward_mse": 0.005006916098136571,
+      "test_obs_mse": 0.0005695007857866585,
+      "test_reward_mse": 0.006834673415869475,
+      "long_horizon": {
+        "5": 0.0005575172835960984,
+        "10": 0.0005546945612877607
+      },
+      "final_train_loss": 0.0005560569115914404,
+      "time_seconds": 878.6874611377716,
+      "num_params": 9439427
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 42,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 123,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 456,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 789,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    },
+    {
+      "approach": "interference_ensemble",
+      "seed": 1024,
+      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+    }
+  ]
+}

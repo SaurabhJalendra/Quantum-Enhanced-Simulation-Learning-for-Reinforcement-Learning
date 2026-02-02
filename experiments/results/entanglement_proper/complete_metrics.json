@@ -1,0 +1,20 @@
+{
+  "approach": "entanglement_proper",
+  "description": "Entanglement-inspired layers with learned correlations",
+  "config": {
+    "stoch_dim": 64,
+    "deter_dim": 512,
+    "hidden_dim": 512
+  },
+  "results": {
+    "test_mse_mean": 0.1464656963944435,
+    "test_mse_std": 0.0392860657394419,
+    "test_mses": [
+      0.21832600235939026,
+      0.1505623608827591,
+      0.1362951546907425,
+      0.10197675973176956,
+      0.12516820430755615
+    ]
+  }
+}

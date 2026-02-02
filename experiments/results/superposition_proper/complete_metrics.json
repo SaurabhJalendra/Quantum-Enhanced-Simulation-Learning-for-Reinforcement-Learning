@@ -1,0 +1,35 @@
+{
+  "approach": "superposition_proper",
+  "description": "Superposition-inspired replay with interference-based combination",
+  "quantum_principle": "Superposition explores multiple states; interference amplifies agreement",
+  "config": {
+    "stoch_dim": 64,
+    "deter_dim": 512,
+    "hidden_dim": 512,
+    "buffer_alpha": 0.6,
+    "num_superpose": 3,
+    "interference_strength": 0.5,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  },
+  "final_performance": {
+    "loss_mean": 0.07367399856448173,
+    "loss_std": 0.007440014280678731,
+    "test_mse_mean": 0.17426166832447051,
+    "test_mse_std": 0.01851408139416155
+  },
+  "raw_results": {
+    "test_mses": [
+      0.16823340952396393,
+      0.1883239895105362,
+      0.16472525894641876,
+      0.20135383307933807,
+      0.14867185056209564
+    ]
+  }
+}
