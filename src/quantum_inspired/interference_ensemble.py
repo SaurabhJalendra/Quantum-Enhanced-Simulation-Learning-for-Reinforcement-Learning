@@ -323,7 +323,11 @@ class InterferenceEnsemble(nn.Module):
             weights = weights / weights.sum()  # Renormalize
 
         # Combine predictions with interference weights
-        weights_expanded = weights.view(self.num_models, 1, 1, 1)
+        # Dynamically expand weights to match prediction dimensions
+        # predictions shape: (num_models, batch, seq, *obs_shape)
+        num_extra_dims = predictions.dim() - 1  # All dims except num_models
+        weights_shape = [self.num_models] + [1] * num_extra_dims
+        weights_expanded = weights.view(*weights_shape)
         combined_pred = (predictions * weights_expanded).sum(dim=0)
 
         # Combine states similarly (only tensor entries, skip distributions)
