@@ -74,6 +74,13 @@
       "time_mean": 869.7479499816894,
       "num_params": 9439427,
       "num_seeds": 5
+    },
+    "interference_ensemble": {
+      "test_obs_mse_mean": 0.002769424510188401,
+      "test_obs_mse_std": 8.41499021378791e-06,
+      "time_mean": 1086.9448918342591,
+      "num_params": 103317135,
+      "num_seeds": 5
     }
   },
   "raw_results": [
@@ -380,27 +387,37 @@
     {
       "approach": "interference_ensemble",
       "seed": 42,
-      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+      "test_obs_mse": 0.0027643017005175353,
+      "time_seconds": 1078.2723779678345,
+      "num_params": 103317135
     },
     {
       "approach": "interference_ensemble",
       "seed": 123,
-      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+      "test_obs_mse": 0.002781339013017714,
+      "time_seconds": 1085.1413886547089,
+      "num_params": 103317135
     },
     {
       "approach": "interference_ensemble",
       "seed": 456,
-      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+      "test_obs_mse": 0.0027606267714872955,
+      "time_seconds": 1086.14116024971,
+      "num_params": 103317135
     },
     {
       "approach": "interference_ensemble",
       "seed": 789,
-      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+      "test_obs_mse": 0.002777723059989512,
+      "time_seconds": 1093.1216204166412,
+      "num_params": 103317135
     },
     {
       "approach": "interference_ensemble",
       "seed": 1024,
-      "error": "The size of tensor a (20) must match the size of tensor b (5) at non-singleton dimension 2"
+      "test_obs_mse": 0.002763132005929947,
+      "time_seconds": 1092.0479118824005,
+      "num_params": 103317135
     }
   ]
 }

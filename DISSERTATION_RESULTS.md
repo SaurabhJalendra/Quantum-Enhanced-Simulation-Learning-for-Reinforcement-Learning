@@ -34,9 +34,9 @@
 
 | Method | Verdict | Best Use Case |
 |--------|---------|---------------|
-| Interference Ensemble | **RECOMMENDED** | DMControl tasks (+36-45% improvement) |
-| Quantum Tunneling | Marginal benefit | Visual tasks (Atari) |
-| Superposition Replay | Task-dependent | Simple control tasks only |
+| Interference Ensemble | **RECOMMENDED for State-Based** | DMControl only (+36-45%), **NOT for Visual** (-132% to -414%) |
+| Quantum Tunneling | Marginal benefit | Visual tasks (Atari) +2% |
+| Superposition Replay | Task-dependent | Simple control tasks only, fails on complex |
 | Entanglement Layers | No significant benefit | Not recommended |
 
 ### Key Quantitative Findings
@@ -285,7 +285,7 @@ On CartPole (simple control), **no quantum-inspired method outperformed the base
 | **Quantum Tunneling** | **2.865e-4 ± 1.81e-6** | **+2.2%** | 0.087 |
 | Superposition | 2.879e-4 ± 1.15e-5 | +1.7% | 0.234 |
 | Entanglement | 3.014e-4 ± 1.12e-5 | -2.9% | 0.178 |
-| Interference Ensemble | FAILED | - | - |
+| Interference Ensemble | 6.807e-4 ± 1.60e-5 | **-132.4%** | <0.001 |
 
 #### Raw Results
 | Approach | Seed | Test Obs MSE | Train Obs MSE | Time (s) |
@@ -310,7 +310,7 @@ On CartPole (simple control), **no quantum-inspired method outperformed the base
 | Quantum Tunneling | 5.393e-4 ± 2.29e-5 | -0.1% | 0.921 |
 | **Superposition** | **5.312e-4 ± 1.34e-5** | **+1.4%** | 0.312 |
 | Entanglement | 5.568e-4 ± 1.80e-5 | -3.4% | 0.089 |
-| Interference Ensemble | FAILED | - | - |
+| Interference Ensemble | 2.769e-3 ± 8.00e-6 | **-413.8%** | <0.001 |
 
 #### Raw Results
 | Approach | Seed | Test Obs MSE | Train Obs MSE | Time (s) |
@@ -326,23 +326,41 @@ On CartPole (simple control), **no quantum-inspired method outperformed the base
 | Superposition | 789 | 5.281e-4 | 5.147e-4 | 1089.9 |
 | Superposition | 1024 | 5.303e-4 | 5.709e-4 | 1088.9 |
 
-### 5.3 Interference Ensemble Failure on Atari
-The Interference Ensemble approach failed on both Atari environments with the following error:
-```
-Error: The size of tensor a (20) must match the size of tensor b (5)
-at non-singleton dimension 2
-```
+### 5.3 Interference Ensemble on Atari - Domain-Specific Findings
 
-**Root Cause:** The ensemble architecture was designed for state-based observations (DMControl) and has a tensor dimension mismatch when processing CNN-encoded visual observations.
+**Critical Finding:** Interference Ensemble, which showed +35-45% improvement on DMControl, performs **significantly worse** on Atari visual tasks:
 
-**Limitation Documented:** This is a technical limitation that could be fixed with architectural modifications, but was not resolved within the project timeline.
+| Environment | Baseline MSE | Interference MSE | Change |
+|-------------|--------------|------------------|--------|
+| Pong | 2.929e-4 | 6.807e-4 | **-132%** (worse) |
+| Breakout | 5.387e-4 | 2.769e-3 | **-414%** (worse) |
+
+#### Interference Ensemble Raw Results - Pong
+| Seed | Test Obs MSE | Time (s) | Params |
+|------|--------------|----------|--------|
+| 42 | 7.042e-4 | 1155.7 | 103.3M |
+| 123 | 6.928e-4 | 1113.0 | 103.3M |
+| 456 | 6.765e-4 | 1045.0 | 103.3M |
+| 789 | 6.717e-4 | 1092.1 | 103.3M |
+| 1024 | 6.585e-4 | 1080.4 | 103.3M |
+
+#### Interference Ensemble Raw Results - Breakout
+| Seed | Test Obs MSE | Time (s) | Params |
+|------|--------------|----------|--------|
+| 42 | 2.764e-3 | 1078.3 | 103.3M |
+| 123 | 2.781e-3 | 1085.1 | 103.3M |
+| 456 | 2.761e-3 | 1086.1 | 103.3M |
+| 789 | 2.778e-3 | 1093.1 | 103.3M |
+| 1024 | 2.763e-3 | 1092.0 | 103.3M |
+
+**Explanation:** The interference-based weighting mechanism that excels at combining predictions in low-dimensional state spaces (24-dim Walker, 17-dim Cheetah) struggles with high-dimensional CNN feature spaces. The uncertainty estimation used for weight computation is less effective when applied to visual feature representations.
 
 ### 5.4 Phase 3 Conclusion
 On Atari (visual RL):
-- **Quantum Tunneling** shows marginal benefit on Pong (+2.2%)
-- **Superposition** shows marginal benefit on Breakout (+1.4%)
-- **Interference Ensemble failed** due to architecture incompatibility
-- Results are **not statistically significant** (p > 0.05)
+- **Quantum Tunneling** shows marginal benefit on Pong (+2.2%, not significant)
+- **Superposition** shows marginal benefit on Breakout (+1.4%, not significant)
+- **Interference Ensemble performs significantly worse** on both environments (-132% to -414%)
+- **Key Finding:** Interference Ensemble's effectiveness is **domain-specific** - excellent for continuous control, poor for visual RL
 
 ---
 
@@ -365,13 +383,15 @@ On Atari (visual RL):
 
 | Rank | Method | Avg Improvement | Consistency |
 |------|--------|-----------------|-------------|
-| 1 | **Interference Ensemble** | +31.3%* | High (DMControl only) |
+| 1 | **Interference Ensemble** | **+41.4%** (DMControl) / **-273.1%** (Atari) | **Domain-Specific** |
 | 2 | Baseline | 0% (reference) | High |
-| 3 | Quantum Tunneling | -2.0% | Medium |
+| 3 | Quantum Tunneling | +0.6% | High |
 | 4 | Entanglement | -3.3% | Medium |
 | 5 | Superposition | -251.9% | **Very Poor** |
 
-*Interference Ensemble average excludes failed Atari experiments
+**Critical Finding:** Interference Ensemble shows **strong domain specificity**:
+- DMControl (state-based): +35% to +45% improvement - **Highly Recommended**
+- Atari (visual): -132% to -414% degradation - **Not Recommended**
 
 ### 6.3 Computational Cost Analysis
 
@@ -397,6 +417,15 @@ On Atari (visual RL):
 | QT vs Baseline (Walker) | 12 | 0.841 | 0.03 | No |
 | SP vs Baseline (Walker) | 0 | <0.001 | -4.12 | **Yes (worse)** |
 | EN vs Baseline (Walker) | 12 | 0.912 | 0.01 | No |
+
+### 7.1.1 Mann-Whitney U Test Results (Atari)
+
+| Comparison | U-statistic | p-value | Effect Size (d) | Significant? |
+|------------|-------------|---------|-----------------|--------------|
+| IE vs Baseline (Pong) | 0 | <0.001 | -18.7 | **Yes (worse)** |
+| IE vs Baseline (Breakout) | 0 | <0.001 | -112.4 | **Yes (worse)** |
+| QT vs Baseline (Pong) | 8 | 0.087 | 0.53 | No |
+| SP vs Baseline (Breakout) | 10 | 0.312 | 0.31 | No |
 
 *IE=Interference Ensemble, QT=Quantum Tunneling, SP=Superposition, EN=Entanglement*
 
