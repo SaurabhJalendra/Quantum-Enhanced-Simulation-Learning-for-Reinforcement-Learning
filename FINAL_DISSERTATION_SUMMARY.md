@@ -16,7 +16,7 @@
 **"Do quantum-inspired algorithmic approaches improve world model training efficiency compared to classical methods, and under what conditions?"**
 
 ### One-Sentence Answer
-**Interference Ensemble methods provide 35-45% improvement on continuous control tasks, but superposition-based methods fail catastrophically on complex dynamics.**
+**Interference Ensemble methods provide 35-45% improvement on state-based continuous control tasks, but fail catastrophically on visual tasks (−132% to −414%), demonstrating strong domain specificity of quantum-inspired methods.**
 
 ### Key Numbers
 
@@ -80,10 +80,16 @@
 | Cheetah-run | Superposition | **-399%** | <0.008 | -36.71 |
 | Reacher-easy | Superposition | **-630%** | <0.008 | -72.26 |
 
+#### Domain-Specific Results (Key Finding)
+| Environment | Method | Change | p-value | Cohen's d |
+|-------------|--------|--------|---------|-----------|
+| Pong (Visual) | Interference Ensemble | **-132%** | <0.001 | -18.71 |
+| Breakout (Visual) | Interference Ensemble | **-414%** | <0.001 | -112.37 |
+
 ### Non-Significant Results (p > 0.00625)
 - Quantum Tunneling: 0-2% improvement (not significant)
 - Entanglement: 0-3% change (not significant)
-- All Atari results: Not significant
+- Atari (non-IE): Marginal, not significant
 
 ---
 

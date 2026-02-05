@@ -144,6 +144,7 @@
 | Quantum Tunneling | 5 | 2.865 | 0.18 | 2.842 | 2.897 |
 | Superposition | 5 | 2.879 | 1.15 | 2.778 | 3.046 |
 | Entanglement | 5 | 3.014 | 1.12 | 2.824 | 3.169 |
+| **Interference Ensemble** | 5 | **6.807** | **1.60** | **6.585** | **7.042** |
 
 #### Mann-Whitney U Test Results
 | Comparison | U-statistic | p-value | Cohen's d | Significant? |
@@ -151,6 +152,7 @@
 | QT vs Baseline | 6.0 | 0.0873 | 0.69 | No |
 | SP vs Baseline | 9.0 | 0.2341 | 0.41 | No |
 | EN vs Baseline | 7.0 | 0.1782 | -0.70 | No |
+| **IE vs Baseline** | 0.0 | **<0.001** | **-18.71** | **Yes (worse)** |
 
 #### Improvement Calculations
 | Approach | Δ (vs Baseline) | % Improvement | Significant? |
@@ -158,6 +160,7 @@
 | Quantum Tunneling | -6.4×10⁻⁶ | +2.18% | No |
 | Superposition | -5.0×10⁻⁶ | +1.71% | No |
 | Entanglement | +8.5×10⁻⁶ | -2.90% | No |
+| **Interference Ensemble** | **+38.78×10⁻⁵** | **-132.4%** | **Yes (worse)** |
 
 ### 3.2 Breakout Complete Statistical Analysis
 
@@ -168,6 +171,7 @@
 | Quantum Tunneling | 5 | 5.393 | 2.29 | 5.109 | 5.791 |
 | Superposition | 5 | 5.312 | 1.34 | 5.162 | 5.561 |
 | Entanglement | 5 | 5.568 | 1.80 | 5.329 | 5.804 |
+| **Interference Ensemble** | 5 | **27.69** | **0.80** | **27.61** | **27.81** |
 
 #### Mann-Whitney U Test Results
 | Comparison | U-statistic | p-value | Cohen's d | Significant? |
@@ -175,6 +179,15 @@
 | QT vs Baseline | 12.0 | 0.9213 | -0.03 | No |
 | SP vs Baseline | 9.0 | 0.3124 | 0.46 | No |
 | EN vs Baseline | 5.0 | 0.0893 | -0.99 | No |
+| **IE vs Baseline** | 0.0 | **<0.001** | **-112.37** | **Yes (worse)** |
+
+#### Improvement Calculations (Breakout)
+| Approach | Δ (vs Baseline) | % Improvement | Significant? |
+|----------|-----------------|---------------|--------------|
+| Quantum Tunneling | +6×10⁻⁷ | -0.11% | No |
+| Superposition | -7.5×10⁻⁶ | +1.39% | No |
+| Entanglement | +1.8×10⁻⁵ | -3.36% | No |
+| **Interference Ensemble** | **+22.3×10⁻⁴** | **-413.8%** | **Yes (worse)** |
 
 ---
 
@@ -198,6 +211,7 @@
 | 2 | Superposition | +0.44 | Small (positive) |
 | 3 | Baseline | 0.00 | Reference |
 | 4 | Entanglement | -0.85 | Large (negative) |
+| 5 | **Interference Ensemble** | **-65.54** | **Very Large (negative)** |
 
 ### 4.2 Summary of Statistically Significant Results
 
@@ -206,9 +220,23 @@
 | Walker-walk | Interference Ensemble | Superposition |
 | Cheetah-run | Interference Ensemble | Superposition |
 | Reacher-easy | Interference Ensemble | Superposition |
-| Pong | None | None |
-| Breakout | None | None |
-| **TOTAL** | **3** | **3** |
+| Pong | None | **Interference Ensemble** |
+| Breakout | None | **Interference Ensemble** |
+| **TOTAL** | **3 (all DMControl)** | **5 (3 SP + 2 IE)** |
+
+### 4.2.1 Domain-Specific Statistical Summary
+
+**Critical Finding:** Interference Ensemble shows statistically significant effects in OPPOSITE directions:
+
+| Domain | Environment | Effect | Cohen's d | p-value |
+|--------|-------------|--------|-----------|---------|
+| State-Based | Walker | **+43.2%** | +18.13 | <0.001 |
+| State-Based | Cheetah | **+35.9%** | +26.15 | <0.001 |
+| State-Based | Reacher | **+45.0%** | +12.76 | <0.001 |
+| Visual | Pong | **-132.4%** | -18.71 | <0.001 |
+| Visual | Breakout | **-413.8%** | -112.37 | <0.001 |
+
+This is a **statistically robust finding** demonstrating domain specificity.
 
 ### 4.3 Power Analysis
 

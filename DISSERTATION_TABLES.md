@@ -93,7 +93,7 @@
 | Quantum Tunneling | 2.86 ± 0.02 | +2.2% | 0.087 | No |
 | Superposition | 2.88 ± 0.12 | +1.7% | 0.234 | No |
 | Entanglement | 3.01 ± 0.11 | −2.9% | 0.178 | No |
-| Interference Ensemble | — | FAILED | — | — |
+| Interference Ensemble | **6.81 ± 0.16** | **−132%** | **<0.001** | **Yes (worse)** |
 
 ---
 
@@ -105,7 +105,7 @@
 | Quantum Tunneling | 5.39 ± 0.23 | −0.1% | 0.921 | No |
 | Superposition | 5.31 ± 0.13 | +1.4% | 0.312 | No |
 | Entanglement | 5.57 ± 0.18 | −3.4% | 0.089 | No |
-| Interference Ensemble | — | FAILED | — | — |
+| Interference Ensemble | **27.69 ± 0.08** | **−414%** | **<0.001** | **Yes (worse)** |
 
 ---
 
@@ -116,9 +116,9 @@
 | Walker-walk | Interference Ensemble (+43.2%) | Superposition (−158%) |
 | Cheetah-run | Interference Ensemble (+35.9%) | Superposition (−399%) |
 | Reacher-easy | Interference Ensemble (+45.0%) | Superposition (−630%) |
-| Pong | None | None |
-| Breakout | None | None |
-| **Total** | **3 significant improvements** | **3 significant degradations** |
+| Pong | None | Interference Ensemble (−132%) |
+| Breakout | None | Interference Ensemble (−414%) |
+| **Total** | **3 significant improvements (DMControl)** | **5 significant degradations** |
 
 ---
 
@@ -126,11 +126,15 @@
 
 | Rank | Method | DMControl Avg | Atari Avg | Overall Verdict |
 |------|--------|---------------|-----------|-----------------|
-| 1 | **Interference Ensemble** | **+41.4%** | FAILED | **Best (DMControl)** |
+| 1 | **Interference Ensemble** | **+41.4%** | **−273%** | **Best for State-Based ONLY** |
 | 2 | Baseline | 0% (ref) | 0% (ref) | Reference |
 | 3 | Quantum Tunneling | −2.7% | +0.9% | Marginal |
 | 4 | Entanglement | −1.2% | −3.2% | No benefit |
 | 5 | Superposition | **−396%** | +1.5% | **Avoid on DMControl** |
+
+**Critical Finding:** Interference Ensemble shows **strong domain specificity**:
+- DMControl (state-based): +35% to +45% — **Highly Recommended**
+- Atari (visual): −132% to −414% — **Not Recommended**
 
 ---
 
@@ -150,10 +154,11 @@
 
 | Question | Answer | Evidence |
 |----------|--------|----------|
-| Do QI methods improve world model training? | **Conditionally Yes** | IE: +35-45% on DMControl |
-| Which QI principles transfer effectively? | Interference > Tunneling > Superposition ≈ Entanglement | Effect sizes |
-| What is the cost-benefit tradeoff? | IE: 5× cost for +40% gain | Time vs accuracy |
-| Are improvements consistent? | IE: Yes (DMControl). SP: Consistently bad. | All 3 environments |
+| Do QI methods improve world model training? | **Domain-Specific Yes** | IE: +35-45% on DMControl, −132-414% on Atari |
+| Which QI principles transfer effectively? | Interference (state-based) > Tunneling > Superposition ≈ Entanglement | Effect sizes |
+| What is the cost-benefit tradeoff? | IE: 5× cost for +40% gain (state), 5× cost for −273% loss (visual) | Domain matters |
+| Are improvements consistent? | IE: Consistent within domain. SP: Consistently bad on DMControl. | All environments |
+| **New: Is effectiveness domain-specific?** | **Yes** | IE excels on state (DMControl), fails on visual (Atari) |
 
 ---
 

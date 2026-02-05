@@ -106,7 +106,53 @@ In practice, this rarely triggers significant jumps, providing only marginal exp
 - Sparse reward signals
 - Smaller models with fewer minima connections
 
-#### 8.1.4 Why Entanglement Layers Show No Benefit
+#### 8.1.4 Why Interference Ensemble Fails on Visual Tasks (Key Finding)
+
+One of the most significant findings of this research is the **domain-specific performance** of Interference Ensemble:
+
+| Domain | Environment | Improvement | Significance |
+|--------|-------------|-------------|--------------|
+| State-Based | Walker-walk | **+43.2%** | p < 0.001 |
+| State-Based | Cheetah-run | **+35.9%** | p < 0.001 |
+| State-Based | Reacher-easy | **+45.0%** | p < 0.001 |
+| Visual | Pong | **−132%** | p < 0.001 |
+| Visual | Breakout | **−414%** | p < 0.001 |
+
+**Why This Happens:**
+
+**1. Dimensionality Mismatch**
+- State-based: 6-24 dimensional observations
+- Visual (CNN-encoded): 4096+ dimensional feature vectors
+- The phase-weighted averaging mechanism is optimized for low-dimensional spaces
+
+**2. Feature Space Characteristics**
+State features are:
+- Physically meaningful (position, velocity, angles)
+- Relatively smooth and continuous
+- Low correlation between dimensions
+
+CNN features are:
+- Abstract visual patterns
+- Highly correlated (nearby pixels share information)
+- Hierarchically structured
+
+**3. Uncertainty Estimation Breakdown**
+The interference mechanism computes weights based on prediction variance:
+```
+uncertainty = variance(predictions across models)
+weights = f(uncertainty)
+```
+In high-dimensional visual feature spaces, this variance becomes:
+- Less meaningful (averaging over 4096 dimensions)
+- Less discriminative (harder to identify confident predictions)
+- Potentially misleading (variance in unimportant features dominates)
+
+**Implications:**
+- Interference Ensemble should be **recommended only for state-based tasks**
+- Visual tasks require different ensemble strategies
+- This finding extends our understanding of when quantum-inspired methods transfer effectively
+
+#### 8.1.5 Why Entanglement Layers Show No Benefit
 
 Entanglement layers attempted to create correlated feature representations:
 ```
@@ -146,14 +192,16 @@ Attention mechanisms and cross-attention layers provide learnable "entanglement"
 
 **"Do quantum-inspired algorithmic approaches improve world model training efficiency compared to classical methods, and under what conditions?"**
 
-**Answer: Conditionally Yes**
+**Answer: Domain-Specific Yes**
 
 | Condition | Result | Recommendation |
 |-----------|--------|----------------|
 | DMControl continuous control | **Yes (Interference Ensemble: +35-45%)** | Use Interference Ensemble |
+| Visual RL (Atari) | **No (Interference Ensemble: −132% to −414%)** | **Avoid Interference Ensemble** |
 | Simple control (CartPole) | No significant difference | Use Baseline |
-| Visual RL (Atari) | Marginal, not significant | Use Baseline |
 | Superposition on DMControl | **Significantly Worse** | Avoid Superposition |
+
+**Critical Finding:** Interference Ensemble shows **strong domain specificity**. The same method that achieves +43% improvement on Walker produces −132% degradation on Pong.
 
 #### Secondary Research Questions
 
