@@ -41,7 +41,8 @@ EXPECTED = {
     # Training (CRITICAL for fair comparison)
     'batch_size': 32,           # Larger batch for RTX 5090
     'seq_len': 20,
-    'num_epochs': 50,
+    'num_steps': 10000,         # Training steps (used by experiment scripts)
+    'num_epochs': 50,           # Training epochs (alternative loop style)
     'learning_rate': 3e-4,      # 0.0003
 
     # Experiment
@@ -254,18 +255,24 @@ def validate_notebook(notebook_path: Path) -> ValidationResult:
 
 
 def validate_all_notebooks() -> Tuple[List[ValidationResult], bool]:
-    """Validate all notebooks in the notebooks directory."""
-    notebooks_dir = PROJECT_ROOT / 'notebooks'
+    """Validate all notebooks across all phase directories."""
+    notebook_dirs = [
+        PROJECT_ROOT / 'phase1_cartpole_notebooks',
+        PROJECT_ROOT / 'phase2_dmcontrol_notebooks',
+        PROJECT_ROOT / 'phase3_atari_notebooks',
+        PROJECT_ROOT / 'notebooks',  # Legacy directory if it exists
+    ]
 
-    if not notebooks_dir.exists():
-        print(f"ERROR: Notebooks directory not found: {notebooks_dir}")
-        return [], False
-
-    notebook_files = sorted(notebooks_dir.glob('*.ipynb'))
+    notebook_files = []
+    for notebooks_dir in notebook_dirs:
+        if notebooks_dir.exists():
+            notebook_files.extend(sorted(notebooks_dir.glob('*.ipynb')))
 
     if not notebook_files:
-        print(f"ERROR: No notebooks found in {notebooks_dir}")
+        print(f"ERROR: No notebooks found in any of: {[str(d) for d in notebook_dirs]}")
         return [], False
+
+    print(f"Found {len(notebook_files)} notebooks across {len([d for d in notebook_dirs if d.exists()])} directories")
 
     results = []
     for nb_path in notebook_files:

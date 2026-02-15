@@ -3,8 +3,9 @@ Script to create Phase 2 DMControl notebooks with full implementation.
 """
 import json
 import os
+from pathlib import Path
 
-base_path = r"D:\Git Repos\Quantum-Enhanced-Simulation-Learning-for-Reinforcement-Learning\phase2_dmcontrol_notebooks"
+base_path = str(Path(__file__).parent.parent / "phase2_dmcontrol_notebooks")
 
 def create_notebook(cells):
     """Create notebook structure."""

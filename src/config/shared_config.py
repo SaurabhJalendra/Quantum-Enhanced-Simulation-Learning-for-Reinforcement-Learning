@@ -47,13 +47,13 @@ class WorldModelConfig:
         """Total state dimension = stochastic + deterministic"""
         return self.stoch_dim + self.deter_dim
 
-    # Encoder/Decoder
-    encoder_hidden_dims: List[int] = field(default_factory=lambda: [256, 256])
-    decoder_hidden_dims: List[int] = field(default_factory=lambda: [256, 256])
+    # Encoder/Decoder (matches actual model implementations: 3-layer MLPs with hidden_dim)
+    encoder_hidden_dims: List[int] = field(default_factory=lambda: [512, 512])
+    decoder_hidden_dims: List[int] = field(default_factory=lambda: [512, 512])
 
     # Predictor networks
-    reward_hidden_dims: List[int] = field(default_factory=lambda: [256, 256])
-    continue_hidden_dims: List[int] = field(default_factory=lambda: [256, 256])
+    reward_hidden_dims: List[int] = field(default_factory=lambda: [512, 512])
+    continue_hidden_dims: List[int] = field(default_factory=lambda: [512, 512])
 
     # Other
     min_std: float = 0.1
@@ -92,7 +92,8 @@ class TrainingConfig:
     # Training loop
     batch_size: int = 32         # Larger batch for GPU utilization
     seq_len: int = 20            # Sequence length for world model
-    num_epochs: int = 50         # Training epochs
+    num_steps: int = 10000       # Training steps (used by experiment scripts)
+    num_epochs: int = 50         # Training epochs (alternative loop style)
 
     # KL balancing (DreamerV3 style)
     kl_balance: float = 0.8

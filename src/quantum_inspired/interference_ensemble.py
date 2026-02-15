@@ -111,8 +111,9 @@ class InterferenceEnsemble(nn.Module):
         # Learnable uncertainty scaling
         self.uncertainty_scale = nn.Parameter(torch.ones(1))
 
-        # Statistics tracking
-        self.prediction_stats = []
+        # Statistics tracking (bounded to prevent memory growth)
+        from collections import deque
+        self.prediction_stats = deque(maxlen=200)
 
     def compute_uncertainty(
         self,

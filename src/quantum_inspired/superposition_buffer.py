@@ -325,7 +325,7 @@ class SuperpositionReplayBuffer:
 
                 if combined_obs is None:
                     combined_obs = weight * obs
-                    combined_actions = obs.copy()  # Keep from primary (can't interpolate discrete)
+                    combined_actions = actions.copy()  # Keep from primary (can't interpolate discrete)
                     combined_rewards = weight * rewards
                 else:
                     combined_obs += weight * obs
