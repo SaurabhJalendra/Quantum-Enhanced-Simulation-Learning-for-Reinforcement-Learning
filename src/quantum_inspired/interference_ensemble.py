@@ -436,7 +436,7 @@ class InterferenceEnsemble(nn.Module):
         if not self.prediction_stats:
             return {}
 
-        recent_stats = self.prediction_stats[-100:]  # Last 100 predictions
+        recent_stats = list(self.prediction_stats)[-100:]  # Last 100 predictions
 
         weights = np.array([s['weights'] for s in recent_stats])
         phases = np.array([s['phases'] for s in recent_stats])
