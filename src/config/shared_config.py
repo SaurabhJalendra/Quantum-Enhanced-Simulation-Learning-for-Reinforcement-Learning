@@ -130,7 +130,7 @@ class ExperimentConfig:
 
     # Statistical analysis
     confidence_level: float = 0.95
-    bonferroni_tests: int = 2  # Number of comparisons for Bonferroni correction
+    bonferroni_tests: int = 4  # Number of comparisons for Bonferroni correction (4 quantum methods vs baseline)
 
     @property
     def bonferroni_alpha(self) -> float:

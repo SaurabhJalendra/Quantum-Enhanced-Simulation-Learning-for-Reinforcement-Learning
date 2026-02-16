@@ -809,7 +809,7 @@ Reacher-hard uses the same observation and action spaces as Reacher-easy but req
 
 | Environment | Significant Improvement | Significant Degradation |
 |-------------|------------------------|------------------------|
-| CartPole | None | None |
+| CartPole | None | Superposition (−50%, p=0.008) |
 | Pendulum | None | Superposition (−411%, p=0.008) |
 | Walker-walk | Interference Ensemble (+43.2%) | Superposition (−158%) |
 | Cheetah-run | Interference Ensemble (+35.9%) | Superposition (−399%) |
@@ -905,12 +905,12 @@ Long-horizon prediction tests the world model's ability to accurately imagine fu
 
 | Env | Method | H=5 | H=10 |
 |-----|--------|-----|------|
-| Pong | Baseline | 2.96 | 2.95 |
+| Pong | Baseline | 2.96 | 2.97 |
 | Pong | QT | 4.09 | 3.39 |
 | Pong | SP | 2.75 | 2.75 |
 | Pong | EN | 2.89 | 2.89 |
 | Pong | IE | N/A† | N/A† |
-| Breakout | Baseline | 6.04 | 6.05 |
+| Breakout | Baseline | 6.04 | 6.10 |
 | Breakout | QT | 5.02 | 4.96 |
 | Breakout | SP | 5.07 | 5.11 |
 | Breakout | EN | 5.89 | 5.89 |
@@ -928,7 +928,7 @@ This table quantifies overfitting tendency by comparing training and test observ
 
 | Environment | Baseline | QT | SP | EN | IE |
 |-------------|----------|-----|-----|-----|-----|
-| CartPole | +978% | +988% | −2% | +999% | +1360% |
+| CartPole | +978% | +988% | −2% | +999% | +1355% |
 | Pendulum | +5% | +1% | +6% | +7% | +2% |
 | Walker | +17% | +14% | <1% | +17% | +25% |
 | Cheetah | +3% | +3% | −2% | +3% | +3% |
@@ -947,13 +947,13 @@ This table quantifies overfitting tendency by comparing training and test observ
 
 | Method | Parameters (State / Atari) | Training Time | Memory | Cost-Effective? |
 |--------|---------------------------|---------------|--------|-----------------|
-| Baseline | 4.7M / 4.7M | 1.0× | 1.0× | Reference |
-| Quantum Tunneling | 4.7M / 4.7M | 1.0-1.2× | 1.0× | Neutral |
-| Superposition | 4.7M / 4.7M | 0.9-1.0× | 1.2× | **No (harmful)** |
-| Entanglement | 5.3M / 5.3M | 1.1-1.2× | 1.1× | No |
-| Interference Ensemble | 23.7M / 103M† | 5.0-6.0× | 5.0× | **Yes (state-based only)** |
+| Baseline | 4.7M / 8.9M | 1.0× | 1.0× | Reference |
+| Quantum Tunneling | 4.7M / 8.9M | 1.0-1.2× | 1.0× | Neutral |
+| Superposition | 4.7M / 8.9M | 0.9-1.0× | 1.2× | **No (harmful)** |
+| Entanglement | 5.3M / 9.4M | 1.1-1.2× | 1.1× | No |
+| Interference Ensemble | 23.7M / 103M† | 2.0-6.3× | 5.0× | **Yes (state-based only)** |
 
-†IE on Atari requires CNN encoders per ensemble member, increasing parameters from 23.7M (state-based, 5 members × MLP) to 103M (Atari, 5 members × CNN+MLP).
+†All methods use CNN encoder/decoder for Atari (84×84 pixel input), increasing parameters from state-based MLP values. IE on Atari requires CNN encoders per ensemble member, increasing from 23.7M to 103M.
 
 ---
 
@@ -1049,8 +1049,8 @@ This finding reinforces that world model quality should be evaluated differently
 
 | Method | Time Overhead | Improvement | Recommendation |
 |--------|---------------|-------------|----------------|
-| Interference Ensemble | 5-6× | +36-47% (state) | **Use for state-based if accuracy critical** |
-| Interference Ensemble | 5-6× | −273% (visual) | **Avoid for visual tasks** |
+| Interference Ensemble | 2-6× | +36-47% (state) | **Use for state-based if accuracy critical** |
+| Interference Ensemble | 2-6× | −132% to −414% (visual) | **Avoid for visual tasks** |
 | Quantum Tunneling | 1.0-1.2× | 0-2% | Neutral, minimal benefit |
 | Superposition | 0.9-1.0× | Negative | **Avoid entirely** |
 | Entanglement | 1.1-1.2× | ~0% | No benefit |
@@ -1079,14 +1079,14 @@ This dissertation provides the first systematic evaluation of quantum-inspired m
 
 | Question | Answer | Evidence |
 |----------|--------|----------|
-| Do quantum-inspired methods improve training? | **Domain-Specific Yes** | IE: +36-47% (state), −273% (visual) |
+| Do quantum-inspired methods improve training? | **Domain-Specific Yes** | IE: +36-47% (state), −132% to −414% (visual) |
 | Which principles transfer effectively? | Interference (state-based) | Effect sizes |
-| What is the cost-benefit tradeoff? | 5× cost for +40% gain (state only) | Time vs accuracy |
+| What is the cost-benefit tradeoff? | 2-6× cost for +40% gain (state only) | Time vs accuracy |
 | Are improvements consistent? | Within-domain yes | All environments |
 
 **Recommendations:**
 
-- **For state-based continuous control:** Use Interference Ensemble (5× cost, 40% gain)
+- **For state-based continuous control:** Use Interference Ensemble (2-6× cost, 40% gain)
 - **For visual RL:** Use baseline (IE causes degradation)
 - **For any task:** Avoid Superposition Replay
 - **For quick experiments:** Baseline is sufficient
