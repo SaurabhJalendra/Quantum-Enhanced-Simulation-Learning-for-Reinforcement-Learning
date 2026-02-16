@@ -681,7 +681,7 @@ def train_world_model(model, buffer, config):
 
 CartPole served as a sanity check environment for validating implementations. The simple 4-dimensional state space reveals baseline behavior of each method before scaling to complex environments.
 
-**Table 6.1: CartPole-v1 Results (5 seeds, IE: 2 seeds)**
+**Table 6.1: CartPole-v1 Results (5 seeds)**
 
 | Approach | Test Obs MSE | Train Obs MSE | Time (s) | Params |
 |----------|-------------|---------------|----------|--------|
@@ -689,11 +689,11 @@ CartPole served as a sanity check environment for validating implementations. Th
 | Quantum Tunneling | 0.111 ± 0.018 | 0.010 ± 0.004 | 1200 | 4.7M |
 | Superposition | 0.164 ± 0.030 | 0.167 ± 0.040 | 909 | 4.7M |
 | Entanglement | 0.112 ± 0.020 | 0.010 ± 0.003 | 889 | 5.3M |
-| Interference Ensemble* | 0.106 ± 0.027 | 0.009 ± 0.002 | 3916 | 23.7M |
+| Interference Ensemble | 0.126 ± 0.038 | 0.009 ± 0.001 | 2783 | 23.7M |
 
-*IE CartPole results based on 2 seeds only. †Note on IE reward prediction: The Interference Ensemble's training objective (`compute_ensemble_loss`) optimises only observation reconstruction and diversity—it does not include a reward prediction term. Consequently, the reward heads of the individual ensemble members remain untrained. IE reward MSE values reported throughout this dissertation are therefore unreliable and should not be compared with single-model reward MSE. This is a known architectural limitation; the observation prediction MSE (the primary evaluation metric) is unaffected.
+†Note on IE reward prediction: The Interference Ensemble's training objective (`compute_ensemble_loss`) optimises only observation reconstruction and diversity—it does not include a reward prediction term. Consequently, the reward heads of the individual ensemble members remain untrained. IE reward MSE values reported throughout this dissertation are therefore unreliable and should not be compared with single-model reward MSE. This is a known architectural limitation; the observation prediction MSE (the primary evaluation metric) is unaffected.
 
-**Key observations:** Baseline, Quantum Tunneling, Entanglement, and IE achieve comparable observation MSE (~0.11). Superposition shows elevated error (0.164, ~50% worse), foreshadowing its catastrophic failure on complex environments. The large generalization gap (train ~0.01 vs test ~0.11) across all methods indicates CartPole's test distribution differs meaningfully from training.
+**Key observations:** Baseline and Quantum Tunneling achieve the best observation MSE (~0.11). Interference Ensemble shows higher variance (0.126 ± 0.038) than other methods on CartPole, consistent with the finding that IE provides no benefit on simple, low-dimensional environments. Superposition shows elevated error (0.164, ~50% worse), foreshadowing its catastrophic failure on complex environments. The large generalization gap (train ~0.01 vs test ~0.11) across all methods indicates CartPole's test distribution differs meaningfully from training.
 
 #### 6.2.2 Pendulum-v1 Results
 
@@ -831,7 +831,7 @@ Note: Bonferroni correction uses 4 comparisons per environment (4 quantum-inspir
 
 | Domain | Environment | Baseline MSE | IE MSE | Change |
 |--------|-------------|-------------|--------|--------|
-| Simple | CartPole | 0.112 | 0.106 | +5% (NS) |
+| Simple | CartPole | 0.109 | 0.126 | **−16% (NS)** |
 | Simple | Pendulum | 0.027 | 0.031 | **−13% (NS)** |
 | State-Based | Walker | 1.799 | 1.022 | **+43%** |
 | State-Based | Cheetah | 0.573 | 0.367 | **+36%** |
@@ -874,7 +874,7 @@ Long-horizon prediction tests the world model's ability to accurately imagine fu
 | CartPole | QT | 0.025 | 0.041 | 0.066 | 0.115 |
 | CartPole | SP | 0.046 | 0.078 | 0.124 | 0.166 |
 | CartPole | EN | 0.025 | 0.042 | 0.069 | 0.118 |
-| CartPole | **IE** | **0.023** | **0.037** | **0.062** | **0.100** |
+| CartPole | IE | 0.025 | 0.052 | 0.081 | 0.123 |
 | Pendulum | Baseline | 0.042 | 0.033 | 0.028 | 0.028 |
 | Pendulum | QT | 0.040 | 0.033 | 0.030 | 0.029 |
 | Pendulum | SP | 0.196 | 0.145 | 0.131 | 0.138 |
@@ -928,7 +928,7 @@ This table quantifies overfitting tendency by comparing training and test observ
 
 | Environment | Baseline | QT | SP | EN | IE |
 |-------------|----------|-----|-----|-----|-----|
-| CartPole | +978% | +988% | −2% | +999% | +1103% |
+| CartPole | +978% | +988% | −2% | +999% | +1360% |
 | Pendulum | +5% | +1% | +6% | +7% | +2% |
 | Walker | +17% | +14% | <1% | +17% | +25% |
 | Cheetah | +3% | +3% | −2% | +3% | +3% |
@@ -1019,7 +1019,7 @@ The most significant finding is Interference Ensemble's domain specificity:
 |---------------|---------------------------|-------------------------------|----------------|
 | Observation dim | 3-4 | 6-24 | 4096+ (CNN features) |
 | Dynamics | Simple/periodic | Multi-body, nonlinear | Visual patterns |
-| IE Effect | Neutral (−13% to +5%) | **+36-47%** | **−132-414%** |
+| IE Effect | Neutral (−16% to −13%, NS) | **+36-47%** | **−132-414%** |
 
 **Key insight:** IE benefits require a "sweet spot" of complexity—low-dimensional observations with sufficiently complex dynamics. Simple environments (CartPole, Pendulum) lack the dynamical complexity for ensemble diversity to provide meaningful benefit, while high-dimensional visual environments overwhelm the phase-weighting mechanism.
 
