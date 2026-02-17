@@ -1094,5 +1094,456 @@ The decoder has a symmetric transposed-CNN architecture. This adds ~4.2M paramet
 
 ---
 
+# PART 7: KEY LITERATURE EXPLAINED
+
+---
+
+## 7.1 DreamerV3 (Hafner et al., 2023)
+
+**Paper:** "Mastering Diverse Domains through World Models"
+
+**What it does:** DreamerV3 is a model-based RL algorithm that learns a world model (RSSM) from experience, then trains a policy entirely inside the "dream" (imagined rollouts from the world model). It achieved human-level performance on 150+ tasks across 7 domains without task-specific tuning.
+
+**Architecture (what we borrowed):**
+```
+DreamerV3 has 3 components:
+1. World Model (RSSM) ← THIS is what our dissertation focuses on
+   - Encoder: obs → embedding
+   - RSSM: GRU (deterministic) + Gaussian (stochastic)
+   - Decoder: state → predicted obs
+   - Reward/Continue predictors
+
+2. Actor (Policy) ← We do NOT train this
+   - Learns actions by imagining outcomes in the world model
+
+3. Critic (Value Function) ← We do NOT train this
+   - Estimates long-term reward for imagined states
+```
+
+**Key innovations in DreamerV3:**
+- **Symlog predictions:** Transforms targets with `symlog(x) = sign(x) * ln(|x| + 1)` to handle different reward scales. We don't use this.
+- **Discrete stochastic states:** Uses categorical distributions instead of Gaussian. We use Gaussian (simpler).
+- **Free bits (similar to our free_nats):** Prevents posterior collapse by clamping KL loss.
+- **Percentile-based return normalization:** Normalizes returns using running percentiles. We don't train policies so this doesn't apply.
+
+**Why we chose it:** It's the state-of-the-art world model. By using its architecture, our results are relevant to the most important current system.
+
+**How we differ:** We ONLY train the world model. DreamerV3 also trains actor and critic inside the dream. Our focus is specifically on whether quantum-inspired methods improve the world model training, not the policy training.
+
+---
+
+## 7.2 World Models (Ha & Schmidhuber, 2018)
+
+**Paper:** "World Models"
+
+**What it does:** The original paper that popularized the concept. They trained a VAE (Variational Autoencoder) + MDN-RNN (Mixture Density Network - Recurrent Neural Network) as a world model, then trained a small controller inside the dream.
+
+**Architecture:**
+```
+1. VAE: Compresses 64x64 images into 32-dimensional latent vector z
+2. MDN-RNN: Predicts next latent state given current state + action
+   - Uses mixture of Gaussians for uncertainty
+3. Controller: Simple linear policy trained in dream
+```
+
+**Key contribution:** Proved that an agent can learn a task almost entirely inside an imagined world, using very few real-world interactions.
+
+**Relation to our work:** Ha & Schmidhuber showed world models work. Hafner (DreamerV3) made them state-of-the-art. We investigate whether quantum-inspired methods can make the training process better.
+
+---
+
+## 7.3 MuZero (Schrittwieser et al., 2020)
+
+**Paper:** "Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model"
+
+**What it does:** MuZero learns a world model that doesn't predict raw observations - it predicts rewards, values, and policies in a learned abstract space. Combined with Monte Carlo Tree Search (MCTS) for planning.
+
+**Key difference from our approach:**
+
+| Aspect | MuZero | Our RSSM |
+|--------|--------|----------|
+| Predicts | Abstract states (not observations) | Raw observations |
+| Planning | MCTS (tree search) | Imagined rollouts |
+| Evaluation | Game score / win rate | Observation prediction MSE |
+| Focus | Playing games optimally | Learning accurate dynamics |
+
+**Why it matters:** MuZero shows that world models don't need to predict raw observations to be useful. Our approach focuses on observation prediction because it's more interpretable and measurable.
+
+---
+
+## 7.4 Quantum-Inspired RL Papers
+
+### Wei et al. (2022) - Quantum-Inspired Experience Replay
+- Applied quantum-inspired sampling to experience replay buffers in DQN
+- Used priority-based amplitude weighting (similar concept to our Superposition buffer)
+- Showed modest improvements on Atari games
+- **Difference from our work:** They applied it to policy learning (DQN), we apply it to world model training. Their implementation was simpler (no observation blending).
+
+### Dong et al. (2012) - Quantum-Inspired Robot Navigation
+- Applied quantum-inspired algorithms to robot path planning
+- Used quantum-inspired evolutionary algorithms for optimization
+- **Difference from our work:** Navigation is a planning problem, not a learning problem. They didn't use neural networks.
+
+### QAOA - Farhi et al. (2014)
+- Original Quantum Approximate Optimization Algorithm paper
+- Alternates between "cost operator" (pushes toward optimal solution) and "mixer operator" (explores new solutions)
+- Designed for combinatorial optimization on actual quantum hardware
+- **Our adaptation:** We borrowed the idea of "alternating between exploitation and exploration" for our tunneling optimizer, where the base optimizer exploits and the noise injection explores.
+
+---
+
+## 7.5 Google Willow (2024) - Quantum Error Correction
+
+**What it is:** Google's quantum computing chip that achieved below-threshold error correction for the first time.
+
+**Key concept:** In quantum computing, qubits are noisy. Error correction uses redundancy: encode 1 logical qubit using many physical qubits, and use majority voting to correct errors.
+
+**Our inspiration:** The Interference Ensemble uses 5 models (like 5 physical qubits) and combines their predictions with weighted voting (like error correction). The outlier detection mechanism (flag models that deviate by > 2 std) is directly inspired by syndrome measurement in quantum error correction.
+
+**Honest note:** In practice, the outlier detection never triggers in our experiments (0 faulty models detected across all runs). The benefit comes from ensemble averaging and interference weighting, not error correction per se.
+
+---
+
+# PART 8: GRU MATHEMATICS
+
+---
+
+## 8.1 GRU (Gated Recurrent Unit) Equations
+
+The GRU is our RSSM's deterministic state component. It has 3 equations:
+
+### Gate 1: Reset Gate (r_t)
+```
+r_t = σ(W_r · [h_{t-1}, x_t] + b_r)
+
+- σ = sigmoid function (output between 0 and 1)
+- W_r = learnable weight matrix
+- h_{t-1} = previous hidden state (512D)
+- x_t = current input (projected stoch + action)
+- b_r = bias
+
+Purpose: Decides how much of the previous hidden state to forget.
+  r_t ≈ 0 → Forget everything (fresh start)
+  r_t ≈ 1 → Remember everything
+```
+
+### Gate 2: Update Gate (z_t)
+```
+z_t = σ(W_z · [h_{t-1}, x_t] + b_z)
+
+Purpose: Decides how much to update the hidden state.
+  z_t ≈ 0 → Keep old state (no update)
+  z_t ≈ 1 → Use new candidate (full update)
+```
+
+### Candidate Hidden State
+```
+h̃_t = tanh(W_h · [r_t ⊙ h_{t-1}, x_t] + b_h)
+
+- ⊙ = element-wise multiplication
+- r_t ⊙ h_{t-1} = selectively zeroes out parts of the old state
+- tanh squashes output to [-1, 1]
+
+Purpose: Computes what the new state COULD be.
+```
+
+### Final Hidden State
+```
+h_t = (1 - z_t) ⊙ h_{t-1} + z_t ⊙ h̃_t
+
+Purpose: Interpolates between old state and candidate.
+  If z_t = 0: h_t = h_{t-1} (keep old state)
+  If z_t = 1: h_t = h̃_t (use new candidate)
+  Otherwise: weighted blend of both
+```
+
+### In Our RSSM
+```
+Input x_t = Linear(concat[z_{t-1}, a_{t-1}])   # stochastic state + action, projected
+Hidden state h_t = GRU output                    # 512 dimensions
+This h_t IS the deterministic state of the RSSM
+```
+
+### GRU vs LSTM Comparison
+
+| Feature | GRU | LSTM |
+|---------|-----|------|
+| Gates | 2 (reset, update) | 3 (forget, input, output) |
+| State | 1 hidden state | 2 states (hidden + cell) |
+| Parameters | Fewer (~75% of LSTM) | More |
+| Performance | Similar on most tasks | Slightly better on very long sequences |
+| Our choice | Yes (follows DreamerV3) | No |
+
+---
+
+## 8.2 Reparameterization Trick (Detailed Math)
+
+The stochastic state z_t is sampled from a Gaussian distribution. But neural network training requires differentiable operations, and sampling is NOT differentiable (you can't compute ∂sample/∂μ).
+
+**The Problem:**
+```
+z_t ~ N(μ, σ²)      ← This is random. How do you backpropagate through randomness?
+```
+
+**The Solution (Reparameterization):**
+```
+ε ~ N(0, 1)          ← Sample standard normal (no learnable parameters)
+z_t = μ + σ × ε      ← Deterministic function of μ and σ
+
+Now:
+  ∂z_t/∂μ = 1        ← Gradient flows!
+  ∂z_t/∂σ = ε        ← Gradient flows!
+  ε is treated as a constant during backpropagation
+```
+
+**In PyTorch:**
+```python
+# This is what dist.rsample() does internally:
+mean, std = posterior_network(input)       # Learnable
+epsilon = torch.randn_like(mean)           # Random but fixed
+z_t = mean + std * epsilon                 # Differentiable!
+```
+
+The "r" in `rsample` stands for "reparameterized sample."
+
+---
+
+## 8.3 KL Divergence Between Two Gaussians (Closed Form)
+
+For two Gaussian distributions p = N(μ₁, σ₁²) and q = N(μ₂, σ₂²):
+
+```
+KL(p || q) = log(σ₂/σ₁) + (σ₁² + (μ₁ - μ₂)²) / (2σ₂²) - 1/2
+```
+
+For our 64-dimensional stochastic state (assuming diagonal covariance):
+```
+KL(posterior || prior) = Σᵢ₌₁⁶⁴ [log(σ_prior_i / σ_post_i) + (σ_post_i² + (μ_post_i - μ_prior_i)²) / (2σ_prior_i²) - 1/2]
+```
+
+This is computed by `torch.distributions.kl_divergence(posterior, prior).sum(-1)` in our code. The `.sum(-1)` sums over the 64 stochastic dimensions. Then we clamp with `free_nats=1.0` and average over the batch.
+
+---
+
+# PART 9: PYTORCH IMPLEMENTATION DETAILS
+
+---
+
+## 9.1 Key PyTorch Concepts Used
+
+### autocast (Automatic Mixed Precision)
+```python
+with torch.autocast(device_type='cuda', dtype=torch.bfloat16):
+    output = model(input)
+```
+**What:** Automatically runs some operations in 16-bit (bfloat16) instead of 32-bit float. Saves GPU memory and is faster on modern GPUs (RTX 5090 has dedicated bfloat16 hardware).
+
+**Which operations:** Matrix multiplications and convolutions run in 16-bit. Loss functions and reductions stay in 32-bit for accuracy.
+
+### GradScaler
+```python
+scaler = GradScaler('cuda', enabled=False)  # Disabled in our code
+```
+**What:** Scales the loss up before backward pass, then scales gradients down. Prevents 16-bit gradients from underflowing to zero. In our code it's disabled (`enabled=False`) because bfloat16 has a wider range than float16 and doesn't need scaling.
+
+### Fused AdamW
+```python
+optimizer = optim.AdamW(model.parameters(), lr=3e-4, fused=True)
+```
+**What:** `fused=True` combines multiple optimizer operations into a single GPU kernel. Instead of 4 separate operations (read weights, compute update, apply decay, write weights), it does one fused pass. ~10-20% faster on CUDA.
+
+### Orthogonal Weight Initialization
+```python
+nn.init.orthogonal_(layer.weight, gain=np.sqrt(2))
+```
+**What:** Initializes weight matrices as orthogonal matrices (columns are perpendicular). This preserves gradient magnitude during forward/backward pass, preventing vanishing/exploding gradients. The `gain=sqrt(2)` compensates for the ELU activation function's effect on signal magnitude.
+
+**Why sqrt(2)?** The ELU activation zeroes out ~half the inputs (negative values). To maintain signal variance, we scale the initial weights by sqrt(2). This is the Kaiming/He initialization principle.
+
+### nn.Sequential
+```python
+self.network = nn.Sequential(
+    nn.Linear(4, 512),
+    nn.ELU(),
+    nn.Linear(512, 512),
+    nn.ELU(),
+    nn.Linear(512, 4)
+)
+```
+**What:** Chains multiple layers into a single module. `self.network(x)` runs all layers in order.
+
+### F.softplus
+```python
+std = F.softplus(raw_std) + min_std
+```
+**What:** `softplus(x) = log(1 + exp(x))`. Smooth approximation of ReLU that's always positive. We use it to ensure standard deviation is always positive (you can't have negative uncertainty). `min_std=0.1` prevents the std from collapsing to zero.
+
+### ELU Activation
+```python
+nn.ELU()  # Used throughout our models
+```
+**What:** `ELU(x) = x if x > 0, else alpha * (exp(x) - 1)`. Similar to ReLU but with smooth negative values instead of hard zero. Benefits: (1) No "dead neurons" (ReLU can permanently kill neurons), (2) Mean activation closer to zero (faster convergence), (3) Smooth gradient everywhere.
+
+```
+ReLU:  [====/    ]  (flat zero for x < 0)
+ELU:   [~~~~~/   ]  (smooth curve for x < 0)
+```
+
+---
+
+## 9.2 CosineAnnealingWarmRestarts Scheduler
+
+```python
+scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
+    optimizer, T_0=1000, T_mult=2
+)
+```
+
+**What it does:** Learning rate follows a cosine curve that periodically resets:
+
+```
+LR
+3e-4 |*                    *                              *
+     | *                  * *                            * *
+     |  *                *   *                          *
+     |   *              *     *                        *
+     |    *            *       *                      *
+     |     *          *         *                    *
+     |      *        *           *                  *
+     |       **    **             **              **
+~0   |         ****                 ****        ****
+     └──────────────────────────────────────────────────
+     0      1000         3000              7000     Steps
+           ↑ restart     ↑ restart         ↑ restart
+     T_0=1000    T_1=2000          T_2=4000
+```
+
+- First cycle: 1000 steps (T_0)
+- Second cycle: 2000 steps (T_0 × T_mult = 1000 × 2)
+- Third cycle: 4000 steps (2000 × 2)
+- Each restart bumps LR back to max, allowing re-exploration
+
+**Why used in baseline but not quantum notebooks:** This is one of the identified training pipeline inconsistencies. The scheduler helps the baseline converge better, which may give it an unfair advantage.
+
+---
+
+## 9.3 Gradient Clipping
+
+```python
+grad_norm = nn.utils.clip_grad_norm_(model.parameters(), max_norm=100.0)
+```
+
+**What it does:** After computing gradients via `.backward()`, before applying them via `optimizer.step()`:
+1. Computes the total gradient norm: `||g|| = sqrt(Σ g_i²)` across ALL parameters
+2. If `||g|| > 100.0`: scales ALL gradients by `100.0 / ||g||`
+3. Returns the original (pre-clipping) gradient norm
+
+**Why 100.0?** This is a very permissive threshold. Normal gradient norms are typically 1-50. Setting it to 100 only clips extreme outliers (e.g., from a rare bad batch). DreamerV3 uses 100.0.
+
+---
+
+# PART 10: SPACE APPLICATIONS & BROADER CONTEXT
+
+---
+
+## 10.1 Relevance to Space Technology (Supervisor's Domain - IN-SPACe)
+
+Your supervisor Gaurav Kumar is from IN-SPACe (Indian National Space Promotion and Authorization Centre). If asked about space applications:
+
+**Satellite Attitude Control:**
+- A satellite needs to maintain correct orientation in orbit
+- A world model could predict how the satellite responds to thruster commands
+- Quantum-inspired IE could improve prediction accuracy for state-based control (3D orientation + angular velocities = low-dimensional state)
+- This is directly analogous to our Walker/Cheetah experiments (continuous control with physical dynamics)
+
+**Space Robotics:**
+- Robotic arms on the ISS or future lunar missions need precise manipulation
+- Our Reacher results (+45-47% improvement with IE) are directly relevant
+- In space, real-world trial-and-error is extremely expensive, making accurate world models critical
+
+**Orbital Mechanics Prediction:**
+- Predicting spacecraft trajectories is a state-based prediction problem
+- The state is position + velocity (6D) - similar dimension to our Reacher (6D)
+- Our finding that IE excels on state-based tasks suggests potential application
+
+**Why Quantum-Inspired for Space:**
+- Space agencies (NASA, ESA, ISRO) are investing in quantum computing research
+- Quantum-inspired methods provide immediate benefits on classical hardware
+- Space systems need robust, accurate predictions - ensemble methods provide both
+
+---
+
+## 10.2 Broader Quantum Computing Context
+
+### How a Real Quantum Computer Works (Brief)
+
+```
+Classical bit:  Can be 0 OR 1
+Qubit:          Can be 0, 1, or ANY combination (superposition)
+                |ψ⟩ = α|0⟩ + β|1⟩   where |α|² + |β|² = 1
+
+Key properties:
+1. Superposition: Qubit is in multiple states until measured
+2. Entanglement: Two qubits can be correlated (measuring one determines the other)
+3. Interference: Quantum amplitudes can add (constructive) or cancel (destructive)
+4. Tunneling: Quantum particles can pass through energy barriers
+```
+
+### Current Quantum Hardware (2024-2025)
+
+| Company | Qubits | Type |
+|---------|--------|------|
+| IBM Eagle | 127 | Superconducting |
+| Google Sycamore | 72 | Superconducting |
+| Google Willow | 105 | Superconducting (error-corrected) |
+| IonQ | 32 | Trapped ion |
+| Rigetti | 80 | Superconducting |
+
+**Why we can't use real quantum computers:**
+- Maximum ~100 qubits. Our smallest model has 4.7M parameters.
+- Error rates too high for practical ML workloads.
+- Quantum circuit depth limited. Our training needs 10,000 iterations.
+- Access is expensive and limited.
+
+### Shor's Algorithm (If Asked)
+**What:** Factors large numbers exponentially faster than classical algorithms.
+**Relevance to our work:** None directly. Shor's is for cryptography, not ML. But it demonstrates that quantum principles CAN provide exponential speedups for specific problems. Our research asks: "Can quantum-inspired principles provide any speedup for world model training?" Answer: modest benefit (36-47%) for specific domains, not exponential speedup.
+
+### Grover's Algorithm (If Asked)
+**What:** Searches an unsorted database in O(√N) instead of O(N).
+**Relevance:** The amplitude amplification concept (boosting probability of good solutions) is conceptually related to our interference ensemble's constructive/destructive interference mechanism.
+
+---
+
+## 10.3 How This Fits in the AI/ML Landscape
+
+```
+Artificial Intelligence
+├── Machine Learning
+│   ├── Supervised Learning (classification, regression)
+│   ├── Unsupervised Learning (clustering, generation)
+│   └── Reinforcement Learning ← OUR AREA
+│       ├── Model-Free RL (DQN, PPO, SAC)
+│       └── Model-Based RL ← OUR SPECIFIC FOCUS
+│           ├── World Models ← WHAT WE TRAIN
+│           │   ├── DreamerV3 (RSSM) ← OUR ARCHITECTURE
+│           │   ├── MuZero (abstract model)
+│           │   └── PWM (multi-task model)
+│           └── Planning (MCTS, CEM)
+│
+├── Quantum Computing
+│   ├── Quantum Hardware (IBM, Google)
+│   ├── Quantum Algorithms (Shor, Grover)
+│   └── Quantum-Inspired Classical ← OUR METHODOLOGY
+│       ├── Quantum Annealing → Tunneling Optimizer
+│       ├── Superposition → Replay Buffer
+│       ├── Entanglement → Feature Layers
+│       └── Interference → Ensemble Weighting
+```
+
+Our dissertation sits at the intersection of Model-Based RL and Quantum-Inspired Classical Algorithms - a previously unexplored intersection.
+
+---
+
 **Document prepared for viva defense of Saurabh Jalendra (2023AC05912)**
 **BITS Pilani MTech AI/ML Dissertation, February 2026**
