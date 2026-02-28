@@ -379,12 +379,23 @@ def compute_ensemble_loss(
         mean_pred = all_predictions.mean(dim=0)
         diversity = ((all_predictions - mean_pred) ** 2).mean()
 
-    total = 0.5 * combined_recon_loss + 0.5 * individual_loss + kl_weight * kl_loss - 0.01 * diversity
+    # Reward prediction loss (average across ensemble members)
+    reward_loss = torch.tensor(0.0, device=obs_seq.device)
+    if "all_states" in states:
+        reward_losses = []
+        for i, model_states in enumerate(states["all_states"]):
+            combined = torch.cat([model_states["deter"], model_states["stoch"]], dim=-1)
+            rpred = ensemble_model.ensemble.models[i].reward_pred(combined).squeeze(-1)
+            reward_losses.append(F.mse_loss(rpred, reward_seq))
+        reward_loss = torch.stack(reward_losses).mean()
+
+    total = 0.5 * combined_recon_loss + 0.5 * individual_loss + kl_weight * kl_loss + reward_loss - 0.01 * diversity
     return {
         "total": total,
         "combined_recon": combined_recon_loss,
         "individual_recon": individual_loss,
         "kl": kl_loss,
+        "reward": reward_loss,
         "diversity": diversity,
     }
 

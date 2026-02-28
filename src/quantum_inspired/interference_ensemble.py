@@ -393,11 +393,13 @@ class InterferenceEnsemble(nn.Module):
         Dict[str, torch.Tensor]
             Dictionary with different loss components
         """
-        # Get all predictions
+        # Get all predictions and states
         all_predictions = []
+        all_states = []
         for model in self.models:
-            pred, _ = model(obs_seq, action_seq)
+            pred, states = model(obs_seq, action_seq)
             all_predictions.append(pred)
+            all_states.append(states)
 
         predictions = torch.stack(all_predictions, dim=0)
 
@@ -408,6 +410,16 @@ class InterferenceEnsemble(nn.Module):
             individual_losses.append(loss)
 
         individual_loss = torch.stack(individual_losses).mean()
+
+        # Reward prediction loss (each model's reward head)
+        reward_loss = torch.tensor(0.0, device=obs_seq.device)
+        if target_rewards is not None:
+            reward_losses = []
+            for model, states in zip(self.models, all_states):
+                combined = torch.cat([states["deter"], states["stoch"]], dim=-1)
+                rpred = model.reward_pred(combined).squeeze(-1)
+                reward_losses.append(F.mse_loss(rpred, target_rewards))
+            reward_loss = torch.stack(reward_losses).mean()
 
         # Combined loss (ensemble prediction should be accurate)
         combined_pred, _ = self.forward(obs_seq, action_seq)
@@ -420,12 +432,13 @@ class InterferenceEnsemble(nn.Module):
         diversity_loss = -0.01 * diversity  # Negative because we want diversity
 
         # Total loss
-        total_loss = 0.5 * individual_loss + 0.5 * combined_loss + diversity_loss
+        total_loss = 0.5 * individual_loss + 0.5 * combined_loss + reward_loss + diversity_loss
 
         return {
             'total': total_loss,
             'individual': individual_loss,
             'combined': combined_loss,
+            'reward': reward_loss,
             'diversity': diversity
         }
 
