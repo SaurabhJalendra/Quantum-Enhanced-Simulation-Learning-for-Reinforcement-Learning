@@ -122,8 +122,9 @@ class EntanglementLayer(nn.Module):
             # Soft entanglement: all pairs with learned weights
             # Make symmetric (entanglement is bidirectional)
             C = self.pair_logits + self.pair_logits.T
-            # Apply softmax to get normalized weights
-            C = torch.softmax(C.view(-1), dim=0).view(self.dim, self.dim)
+            # Apply per-row softmax so each feature has meaningful correlation weights
+            # (Global softmax over 512x512=262K entries produces near-uniform ~0.000004)
+            C = torch.softmax(C, dim=1)
             # Scale by overall correlation strength
             C = C * self.correlation_strength.mean()
         else:
