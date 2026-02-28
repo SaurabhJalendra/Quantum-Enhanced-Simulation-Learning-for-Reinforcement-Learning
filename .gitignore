@@ -48,5 +48,10 @@ test_*.py
 results/
 temp_figures/
 
+# Binary documents (keep source .md files only)
+*.docx
+*.pdf
+*.pptx
+
 # Tool configurations (not needed in repo)
 .claude/
