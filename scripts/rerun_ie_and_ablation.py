@@ -45,7 +45,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Device: {DEVICE}")
 if DEVICE.type == "cuda":
     print(f"GPU: {torch.cuda.get_device_name(0)}")
-    print(f"VRAM: {torch.cuda.get_device_properties(0).total_mem / 1e9:.1f} GB")
+    print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
 
 # ---------------------------------------------------------------------------
 # Standard Configuration
@@ -120,7 +120,12 @@ def set_seed(seed: int):
 # Base World Model (MLP-based, for state-based environments)
 # ---------------------------------------------------------------------------
 class BaseWorldModel(nn.Module):
-    """RSSM world model with MLP encoder/decoder."""
+    """RSSM world model with MLP encoder/decoder.
+
+    Architecture matches the original experiment scripts exactly:
+    - input_proj(stoch + action) -> GRU (autoregressive on stochastic state)
+    - Encoder output used only for posterior computation
+    """
 
     def __init__(self, obs_dim: int, action_dim: int,
                  stoch_dim: int = STOCH_DIM, deter_dim: int = DETER_DIM,
@@ -132,31 +137,35 @@ class BaseWorldModel(nn.Module):
         self.deter_dim = deter_dim
         self.hidden_dim = hidden_dim
         self.state_dim = stoch_dim + deter_dim
-        self.min_std = 0.1
 
-        # Encoder
+        # Encoder: obs -> embed
         self.encoder = nn.Sequential(
             nn.Linear(obs_dim, hidden_dim), nn.ELU(),
             nn.Linear(hidden_dim, hidden_dim), nn.ELU(),
             nn.Linear(hidden_dim, hidden_dim),
         )
 
-        # GRU
-        self.gru = nn.GRUCell(hidden_dim + action_dim, deter_dim)
+        # Input projection: stoch + action -> hidden (autoregressive)
+        self.input_proj = nn.Sequential(
+            nn.Linear(stoch_dim + action_dim, hidden_dim), nn.ELU()
+        )
 
-        # Prior
+        # GRU dynamics: input is projected(stoch+action), hidden is deter
+        self.gru = nn.GRUCell(hidden_dim, deter_dim)
+
+        # Prior: deter -> stoch*2
         self.prior_net = nn.Sequential(
             nn.Linear(deter_dim, hidden_dim), nn.ELU(),
             nn.Linear(hidden_dim, stoch_dim * 2),
         )
 
-        # Posterior
+        # Posterior: deter + embed -> stoch*2
         self.posterior_net = nn.Sequential(
             nn.Linear(deter_dim + hidden_dim, hidden_dim), nn.ELU(),
             nn.Linear(hidden_dim, stoch_dim * 2),
         )
 
-        # Decoder
+        # Decoder: state(deter+stoch) -> obs
         self.decoder = nn.Sequential(
             nn.Linear(self.state_dim, hidden_dim), nn.ELU(),
             nn.Linear(hidden_dim, hidden_dim), nn.ELU(),
@@ -179,22 +188,29 @@ class BaseWorldModel(nn.Module):
 
     def _get_dist(self, stats):
         mean, log_std = stats.chunk(2, dim=-1)
-        std = F.softplus(log_std) + self.min_std
+        std = F.softplus(log_std) + 0.1
         return torch.distributions.Normal(mean, std)
 
     def forward(self, obs_seq, action_seq):
         B, T, _ = obs_seq.shape
-        h = torch.zeros(B, self.deter_dim, device=obs_seq.device)
+        device = obs_seq.device
+        # Initial state: zeros for both deter and stoch
+        h = torch.zeros(B, self.deter_dim, device=device)
+        z = torch.zeros(B, self.stoch_dim, device=device)
         predictions, priors, posteriors = [], [], []
         deter_states, stoch_states = [], []
 
         for t in range(T):
             embed = self.encoder(obs_seq[:, t])
             act = action_seq[:, t] if action_seq.dim() == 3 else action_seq[:, t:t+1]
-            gru_input = torch.cat([embed, act], dim=-1)
-            h = self.gru(gru_input, h)
 
+            # Autoregressive: previous stoch + current action -> projection -> GRU
+            x = self.input_proj(torch.cat([z, act], dim=-1))
+            h = self.gru(x, h)
+
+            # Prior from deterministic state
             prior_dist = self._get_dist(self.prior_net(h))
+            # Posterior from deterministic state + encoder embedding
             posterior_dist = self._get_dist(self.posterior_net(torch.cat([h, embed], dim=-1)))
             z = posterior_dist.rsample()
 
@@ -224,7 +240,15 @@ class BaseWorldModel(nn.Module):
 # CNN World Model (for Atari)
 # ---------------------------------------------------------------------------
 class BaseCNNWorldModel(nn.Module):
-    """RSSM world model with CNN encoder/decoder for visual tasks."""
+    """RSSM world model with CNN encoder/decoder for visual tasks.
+
+    Architecture matches the original experiment scripts exactly:
+    - CNN encoder: Conv2d layers (no padding) -> flatten -> Linear
+    - input_proj(stoch + action) -> GRU (autoregressive)
+    - CNN decoder: Linear -> reshape -> ConvTranspose2d layers
+    """
+
+    CNN_FLATTEN_DIM = 256 * 4 * 4  # 4096
 
     def __init__(self, obs_channels: int = 1, action_dim: int = 6,
                  stoch_dim: int = STOCH_DIM, deter_dim: int = DETER_DIM,
@@ -236,39 +260,43 @@ class BaseCNNWorldModel(nn.Module):
         self.deter_dim = deter_dim
         self.hidden_dim = hidden_dim
         self.state_dim = stoch_dim + deter_dim
-        self.min_std = 0.1
-        self.embed_dim = hidden_dim
 
-        # CNN Encoder
-        self.cnn_encoder = nn.Sequential(
-            nn.Conv2d(obs_channels, 32, 4, stride=2, padding=1),  nn.ReLU(),
-            nn.Conv2d(32, 64, 4, stride=2, padding=1),  nn.ReLU(),
-            nn.Conv2d(64, 128, 4, stride=2, padding=1),  nn.ReLU(),
-            nn.Conv2d(128, 256, 4, stride=2, padding=1),  nn.ReLU(),
+        # CNN Encoder: (B, 1, 84, 84) -> (B, hidden_dim)
+        self.cnn = nn.Sequential(
+            nn.Conv2d(obs_channels, 32, 4, stride=2),  nn.ELU(),   # -> (32, 41, 41)
+            nn.Conv2d(32, 64, 4, stride=2),             nn.ELU(),   # -> (64, 19, 19)
+            nn.Conv2d(64, 128, 3, stride=2),            nn.ELU(),   # -> (128, 9, 9)
+            nn.Conv2d(128, 256, 3, stride=2),           nn.ELU(),   # -> (256, 4, 4)
         )
-        self.cnn_flatten_dim = 256 * 5 * 5  # After 4x conv with stride 2 on 84x84
-        self.fc_encoder = nn.Linear(self.cnn_flatten_dim, self.embed_dim)
+        self.fc_encoder = nn.Linear(self.CNN_FLATTEN_DIM, hidden_dim)
 
-        # GRU
-        self.gru = nn.GRUCell(self.embed_dim + action_dim, deter_dim)
+        # Input projection: stoch + action -> hidden (autoregressive)
+        self.input_proj = nn.Sequential(
+            nn.Linear(stoch_dim + action_dim, hidden_dim), nn.ELU()
+        )
 
-        # Prior/Posterior
+        # GRU dynamics
+        self.gru = nn.GRUCell(hidden_dim, deter_dim)
+
+        # Prior: deter -> stoch*2
         self.prior_net = nn.Sequential(
             nn.Linear(deter_dim, hidden_dim), nn.ELU(),
             nn.Linear(hidden_dim, stoch_dim * 2),
         )
+
+        # Posterior: deter + embed -> stoch*2
         self.posterior_net = nn.Sequential(
-            nn.Linear(deter_dim + self.embed_dim, hidden_dim), nn.ELU(),
+            nn.Linear(deter_dim + hidden_dim, hidden_dim), nn.ELU(),
             nn.Linear(hidden_dim, stoch_dim * 2),
         )
 
-        # CNN Decoder
-        self.fc_decoder = nn.Linear(self.state_dim, 256 * 5 * 5)
-        self.cnn_decoder = nn.Sequential(
-            nn.ConvTranspose2d(256, 128, 4, stride=2, padding=1), nn.ReLU(),
-            nn.ConvTranspose2d(128, 64, 4, stride=2, padding=1, output_padding=(1,1)), nn.ReLU(),
-            nn.ConvTranspose2d(64, 32, 4, stride=2, padding=1, output_padding=(1,1)), nn.ReLU(),
-            nn.ConvTranspose2d(32, obs_channels, 6, stride=2, padding=2),
+        # CNN Decoder: (B, state_dim) -> (B, 1, 84, 84)
+        self.fc_decoder = nn.Linear(self.state_dim, 256 * 4 * 4)
+        self.deconv = nn.Sequential(
+            nn.ConvTranspose2d(256, 128, 3, stride=2), nn.ELU(),   # -> (128, 9, 9)
+            nn.ConvTranspose2d(128, 64, 3, stride=2),  nn.ELU(),   # -> (64, 19, 19)
+            nn.ConvTranspose2d(64, 32, 4, stride=2),   nn.ELU(),   # -> (32, 40, 40)
+            nn.ConvTranspose2d(32, obs_channels, 6, stride=2),     # -> (1, 84, 84)
         )
 
         # Reward predictor
@@ -287,36 +315,48 @@ class BaseCNNWorldModel(nn.Module):
 
     def _get_dist(self, stats):
         mean, log_std = stats.chunk(2, dim=-1)
-        std = F.softplus(log_std) + self.min_std
+        std = F.softplus(log_std) + 0.1
         return torch.distributions.Normal(mean, std)
 
     def _encode(self, obs):
-        """Encode a single frame: (B, C, H, W) -> (B, embed_dim)"""
-        features = self.cnn_encoder(obs)
+        """Encode a single frame: (B, C, H, W) -> (B, hidden_dim)"""
+        features = self.cnn(obs)
         flat = features.view(features.size(0), -1)
         return self.fc_encoder(flat)
 
     def _decode(self, state):
         """Decode state to image: (B, state_dim) -> (B, C, H, W)"""
         x = self.fc_decoder(state)
-        x = x.view(-1, 256, 5, 5)
-        return self.cnn_decoder(x)
+        x = x.view(-1, 256, 4, 4)
+        return self.deconv(x)
 
     def forward(self, obs_seq, action_seq):
         B, T = obs_seq.shape[0], obs_seq.shape[1]
-        h = torch.zeros(B, self.deter_dim, device=obs_seq.device)
+        device = obs_seq.device
+        # Initial state: zeros
+        h = torch.zeros(B, self.deter_dim, device=device)
+        z = torch.zeros(B, self.stoch_dim, device=device)
+
+        # Encode all timesteps at once for efficiency
+        C, H, W = obs_seq.shape[2], obs_seq.shape[3], obs_seq.shape[4]
+        obs_flat = obs_seq.view(B * T, C, H, W)
+        embeds = self._encode(obs_flat)     # (B*T, hidden_dim)
+        embeds = embeds.view(B, T, -1)      # (B, T, hidden_dim)
+
         predictions, priors, posteriors = [], [], []
         deter_states, stoch_states = [], []
 
         for t in range(T):
-            obs_t = obs_seq[:, t]  # (B, C, H, W)
-            embed = self._encode(obs_t)
             act = action_seq[:, t]
-            gru_input = torch.cat([embed, act], dim=-1)
-            h = self.gru(gru_input, h)
 
+            # Autoregressive: previous stoch + current action -> projection -> GRU
+            x = self.input_proj(torch.cat([z, act], dim=-1))
+            h = self.gru(x, h)
+
+            # Prior from deterministic state
             prior_dist = self._get_dist(self.prior_net(h))
-            posterior_dist = self._get_dist(self.posterior_net(torch.cat([h, embed], dim=-1)))
+            # Posterior from deterministic state + encoder embedding
+            posterior_dist = self._get_dist(self.posterior_net(torch.cat([h, embeds[:, t]], dim=-1)))
             z = posterior_dist.rsample()
 
             state = torch.cat([h, z], dim=-1)
